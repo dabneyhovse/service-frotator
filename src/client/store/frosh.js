@@ -22,7 +22,6 @@ export const fetchFrosh = (search) => async (dispatch) => {
   try {
     const res = await Axios.get("/api/frotator/frosh", { params: search });
     if (search.cards) {
-      console.log(res.data);
       dispatch(gotFroshCards(res.data.rows));
       return;
     }

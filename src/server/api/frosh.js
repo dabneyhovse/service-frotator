@@ -74,8 +74,6 @@ router.get("/", isLoggedIn, async (req, res, next) => {
     let include = [];
     let where = {};
 
-    console.log(req.query);
-
     if (search.name) {
       where = {
         ...where,
@@ -189,11 +187,9 @@ router.get("/:froshId", isLoggedIn, async (req, res, next) => {
       }
       frosh["frotator-comments"][i].dataValues.from = from;
     }
-    console.log({ userId: req.user.id, frotatorFroshId: req.params.froshId });
     const vote = await Vote.findOne({
       where: { userId: req.user.id, frotatorFroshId: req.params.froshId },
     });
-    console.log(vote);
     if (vote) {
       frosh.dataValues.favorite = true;
     }

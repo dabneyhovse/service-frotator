@@ -23,7 +23,6 @@ router.get("/frosh/:froshId", isLoggedIn, async (req, res, next) => {
     });
     for (let i = 0; i < comments.length; i++) {
       const res = await Axios.get(`/api/users/${comments[i].userId}`);
-      console.log("res", res);
       comments[i].dataValues.from = res.data;
     }
   } catch (error) {
@@ -112,13 +111,6 @@ router.put("/:commentId", async (req, res, next) => {
  */
 router.post("/", async (req, res, next) => {
   try {
-    console.log({
-      text: req.body.text,
-      anon: req.body.anon,
-      froshId: req.body.froshId,
-      userId: req.body.userId,
-      private: false,
-    });
     const comment = await Comment.create({
       text: req.body.text,
       anon: req.body.anon,

@@ -27,11 +27,9 @@ export default function frotatorSettings() {
     setSelectedUpdateFile(event.target.files[0]);
   };
   const handleUpdate = async (event) => {
-    console.log(event);
     event.preventDefault();
     const formData = new FormData();
     formData.append("file", selectedUpdateFile);
-    console.log(selectedUpdateFile);
     try {
       const res = await Axios.put(
         "/api/frotator/frosh/",
@@ -41,7 +39,6 @@ export default function frotatorSettings() {
         }
       );
       toast.success("The update file was sucessfully uploaded.");
-      console.log(res);
     } catch (error) {
       toast.error("There was an error submitting the update file.");
     }

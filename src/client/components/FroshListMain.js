@@ -33,7 +33,6 @@ export default function FroshListMain(props) {
     dispatch(fetchFrosh({ search, pageNum: 1 }));
   };
 
-  console.log(frosh)
 
   return (
     <div className="mainContent">

@@ -36,7 +36,6 @@ export const fetchSingleFrosh = (id) => async (dispatch) => {
 export const postNewComment = (comment) => async (dispatch) => {
   try {
     const res = await Axios.post("/api/frotator/comments", comment);
-    console.log(res);
     dispatch(addedComment(res.data));
   } catch (error) {
     toast.error("There was an error posting your comment");
@@ -51,7 +50,6 @@ export const favoriteFrosh = (froshId, favorite) => async (dispatch) => {
     });
     dispatch(toggleFroshFavorite(favorite));
   } catch (error) {
-    console.log(error);
     toast.error("There was an error favoriting this frosh");
   }
 };
