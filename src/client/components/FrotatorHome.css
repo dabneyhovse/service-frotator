@@ -1,0 +1,12 @@
+.home-card {
+  flex-direction: row !important;
+  cursor: pointer;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.23);
+}
+.home-card-img {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  height: 30vh;
+  width: 50%;
+}

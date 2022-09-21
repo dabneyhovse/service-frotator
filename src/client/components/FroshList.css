@@ -1,0 +1,34 @@
+.frosh-list-item {
+  border-radius: 5px;
+  height: 30vh;
+  padding: 10px;
+}
+
+.frosh-info {
+  background-color: rgba(0, 0, 0, 0.502);
+  color: white;
+  text-align: center;
+  padding: 5px;
+}
+
+.frosh-list-image {
+  border-radius: 5px;
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.23);
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  transition: all;
+  transition-duration: 500ms;
+  margin: 0px;
+  cursor: pointer;
+}
+
+.frosh-list-image:hover {
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.8);
+  margin: 10px;
+}
