@@ -109,7 +109,9 @@ router.get("/", isLoggedIn, async (req, res, next) => {
     const query = {
       where,
       include,
-      ...(req.query.cards ? {} : paginate(req.query.pageNum || 1)),
+      ...(req.query.cards || search.dinnerGroup !== "any"
+        ? {}
+        : paginate(req.query.pageNum || 1)),
       attributes: [
         "pronouns",
         "image",

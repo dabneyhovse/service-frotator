@@ -4,7 +4,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   favoriteFrosh,
   fetchSingleFrosh,
+  gotSingleFrosh,
   postNewComment,
+  singleFroshDefault,
 } from "../store/singleFrosh";
 
 import {
@@ -24,10 +26,7 @@ import {
   MDBCardBody,
   MDBCardImage,
   MDBTextArea,
-  MDBIcon,
-  MDBInput,
   MDBCardFooter,
-  MDBBtn,
   MDBCheckbox,
 } from "mdb-react-ui-kit";
 
@@ -45,9 +44,11 @@ export default function SingleFrosh() {
     text: "",
   });
 
-  const { frosh, user } = useSelector((state) => ({
+  const { frosh, user, selectedFroshIdx, allFrosh } = useSelector((state) => ({
     frosh: state.frotator.singleFrosh.frosh,
+    allFrosh: state.frotator.frosh.list,
     user: state.user.data,
+    selectedFroshIdx: state.frotator.frosh.selectedFroshIdx,
   }));
 
   useEffect(() => {
@@ -64,6 +65,19 @@ export default function SingleFrosh() {
 
   const toggleFavorite = () => {
     dispatch(favoriteFrosh(params.froshId, !frosh.favorite));
+  };
+
+  const handleShift = (amount) => () => {
+    let idx = amount + selectedFroshIdx;
+    if (selectedFroshIdx == -1) {
+      idx = 0;
+    } else if (idx < 0) {
+      idx = allFrosh.length - 1 + idx;
+    } else if (idx - allFrosh.length + 1 > 0) {
+      idx = idx - allFrosh.length + 1;
+    }
+    navigate(`/frotator/frosh/${allFrosh[idx].id}`);
+    dispatch(gotSingleFrosh(singleFroshDefault.frosh));
   };
 
   const handlePost = (event) => {
@@ -84,13 +98,28 @@ export default function SingleFrosh() {
 
   return (
     <Container className="mainContent" style={{ backgroundColor: "#eee" }}>
-      <Button
-        onClick={() => {
-          navigate(-1);
-        }}
-      >
-        Back
-      </Button>
+      <ButtonToolbar>
+        <ButtonGroup>
+          <Button
+            className="m-1"
+            onClick={() => {
+              navigate("/frotator/frosh");
+            }}
+          >
+            Frosh List
+          </Button>
+        </ButtonGroup>
+        <ButtonGroup>
+          <Button className="m-1" onClick={handleShift(-1)}>
+            Previous Prefr*sh
+          </Button>
+        </ButtonGroup>
+        <ButtonGroup>
+          <Button className="m-1" onClick={handleShift(1)}>
+            Next Prefr*sh
+          </Button>
+        </ButtonGroup>
+      </ButtonToolbar>
       <MDBContainer className="py-5">
         <MDBRow>
           <MDBCol lg="4">

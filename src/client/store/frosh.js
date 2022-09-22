@@ -1,5 +1,6 @@
 import Axios from "axios";
 import { toast } from "react-toastify";
+import { SERVICE_FROTATOR_GOT_SINGLE_FROSH } from "./singleFrosh";
 
 // Action Types
 export const SERVICE_FROTATOR_GOT_FROSH = "SERVICE_FROTATOR_GOT_FROSH";
@@ -47,6 +48,7 @@ const init = {
   search: {
     dinnerGroup: "any",
   },
+  selectedFroshIdx: 0,
 };
 
 // Reducer
@@ -63,6 +65,14 @@ const reducer = (state = init, action) => {
     }
     case SERVICE_FROTATOR_SET_SEARCH: {
       return { ...state, search: action.search };
+    }
+    case SERVICE_FROTATOR_GOT_SINGLE_FROSH: {
+      return {
+        ...state,
+        selectedFroshIdx: state.list.findIndex(
+          (fl) => fl.id == action.frosh.id
+        ),
+      };
     }
     default:
       return state;

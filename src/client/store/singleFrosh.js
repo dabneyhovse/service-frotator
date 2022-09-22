@@ -55,16 +55,17 @@ export const favoriteFrosh = (froshId, favorite) => async (dispatch) => {
 };
 
 // Initial state of reducer
-const init = {
+export const singleFroshDefault = {
   frosh: {
     "frotator-comments": [],
     favorite: false,
     bio: {},
+    loading: true,
   },
 };
 
 // Reducer
-const reducer = (state = init, action) => {
+const reducer = (state = singleFroshDefault, action) => {
   switch (action.type) {
     case SERVICE_FROTATOR_GOT_SINGLE_FROSH: {
       return { ...state, frosh: action.frosh };
