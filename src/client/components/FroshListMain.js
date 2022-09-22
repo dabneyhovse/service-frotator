@@ -2,18 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Pagination, Accordion, Form, Button } from "react-bootstrap";
 import FroshList from "./FroshList";
-import { fetchFrosh, froshListSetPage } from "../store/frosh";
+import { fetchFrosh, froshListSetPage, setSearch } from "../store/frosh";
 
 export default function FroshListMain(props) {
-  const { frosh, page, count } = useSelector((state) => ({
+  const { frosh, page, count, search } = useSelector((state) => ({
     frosh: state.frotator.frosh.list,
     count: state.frotator.frosh.count,
     page: state.frotator.frosh.page,
+    search: state.frotator.frosh.search,
   }));
 
-  const [search, setSearch] = useState({
-    dinnerGroup: "any",
-  });
   const dispatch = useDispatch();
   const handlePageMove = (newPage) => (event) => {
     dispatch(froshListSetPage(newPage));
@@ -24,7 +22,7 @@ export default function FroshListMain(props) {
   const after = page == count ? "disabled" : "";
 
   const onChange = (event) => {
-    setSearch({ ...search, [event.target.name]: event.target.value });
+    dispatch(setSearch({ ...search, [event.target.name]: event.target.value }));
   };
 
   const onSearch = (event) => {
@@ -32,7 +30,6 @@ export default function FroshListMain(props) {
     dispatch(froshListSetPage(1));
     dispatch(fetchFrosh({ search, pageNum: 1 }));
   };
-
 
   return (
     <div className="mainContent">

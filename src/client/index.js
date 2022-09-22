@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Route, Routes } from "react-router-dom";
 
 import {
@@ -14,8 +14,14 @@ import { fetchFrosh } from "./store/frosh";
 
 export default function FrotatorMain() {
   const dispatch = useDispatch();
+
+  const { search, page } = useSelector((state) => ({
+    search: state.frotator.frosh.search,
+
+    page: state.frotator.frosh.page,
+  }));
   useEffect(() => {
-    dispatch(fetchFrosh({}));
+    dispatch(fetchFrosh({ search, pageNum: page }));
 
     return () => {
       // unmount stuff

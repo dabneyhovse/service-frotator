@@ -6,6 +6,7 @@ export const SERVICE_FROTATOR_GOT_FROSH = "SERVICE_FROTATOR_GOT_FROSH";
 export const SERVICE_FROTATOR_GOT_FROSH_CARDS =
   "SERVICE_FROTATOR_GOT_FROSH_CARDS";
 export const SERVICE_FROTATOR_SET_PAGE = "SERVICE_FROTATOR_SET_PAGE";
+export const SERVICE_FROTATOR_SET_SEARCH = "SERVICE_FROTATOR_SET_SEARCH";
 
 // Action Creators
 export const gotFrosh = (rows, pages) => {
@@ -17,6 +18,11 @@ export const gotFroshCards = (frosh) => {
 export const froshListSetPage = (page) => {
   return { type: SERVICE_FROTATOR_SET_PAGE, page };
 };
+
+export const setSearch = (search) => {
+  return { type: SERVICE_FROTATOR_SET_SEARCH, search };
+};
+
 // Thunks, async functions basically
 export const fetchFrosh = (search) => async (dispatch) => {
   try {
@@ -38,6 +44,9 @@ const init = {
   cards: [],
   page: 1,
   count: 1,
+  search: {
+    dinnerGroup: "any",
+  },
 };
 
 // Reducer
@@ -51,6 +60,9 @@ const reducer = (state = init, action) => {
     }
     case SERVICE_FROTATOR_SET_PAGE: {
       return { ...state, page: action.page };
+    }
+    case SERVICE_FROTATOR_SET_SEARCH: {
+      return { ...state, search: action.search };
     }
     default:
       return state;
