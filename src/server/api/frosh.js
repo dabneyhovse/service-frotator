@@ -293,6 +293,7 @@ router.put("/", isAdmin, upload.single("csv-file"), async (req, res, next) => {
       "bioPDF",
       "bio",
       "dinnerGroup",
+      "uuid",
     ];
 
     csvData = [];
@@ -355,12 +356,17 @@ router.put("/", isAdmin, upload.single("csv-file"), async (req, res, next) => {
               if (updateable.indexOf(key) !== -1) {
                 toUpdate[key] = curr[key];
               }
+              if (key == "uuid") {
+                toUpdate[
+                  "image"
+                ] = `./resources/images/prefrosh_images/000${uuid}.jpg`;
+              }
             });
 
             toUpdate = { ...toUpdate, bio };
-            if (toUpdate.image) {
-              toUpdate.image = googleDriveImageToSRC(toUpdate.image);
-            }
+            // if (toUpdate.image) {
+            //   toUpdate.image = googleDriveImageToSRC(toUpdate.image);
+            // }
 
             frosh.set(toUpdate);
 

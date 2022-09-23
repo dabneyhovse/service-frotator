@@ -2,6 +2,10 @@ const Sequelize = require("sequelize");
 const db = require("../db");
 
 const Frosh = db.define("frotator-frosh", {
+  uuid: {
+    type: Sequelize.STRING,
+    defaultValue: "",
+  },
   /**
    * String that represents the first name of the frosh
    */
