@@ -359,7 +359,7 @@ router.put("/", isAdmin, upload.single("csv-file"), async (req, res, next) => {
               if (key == "uuid") {
                 toUpdate[
                   "image"
-                ] = `./resources/images/prefrosh_images/000${curr[key]}.jpg`;
+                ] = `/resources/images/prefrosh_images/000${curr[key]}.jpg`;
               }
             });
 
