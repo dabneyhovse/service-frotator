@@ -64,6 +64,16 @@ const paginate = (page) => {
  *        name:     substring of the frosh's name
  *        event:    event the frosh is attending (event id from the events model)
  */
+
+const SORT_OPTIONS = {
+  0: [["id", "ASC"]],
+  1: [["lastName", "ASC"]],
+  2: [[Sequelize.col("comments-count"), "DESC"]],
+  3: [[Sequelize.col("comments-count"), "ASC"]],
+  4: [[Sequelize.col("favorites-count"), "DESC"]],
+  5: [[Sequelize.col("favorites-count"), "ASC"]],
+};
+
 router.get("/", isLoggedIn, async (req, res, next) => {
   try {
     const search = req.query.search ? JSON.parse(req.query.search) : {};
@@ -71,7 +81,20 @@ router.get("/", isLoggedIn, async (req, res, next) => {
      * include and where params to be added
      * to the query
      */
-    let include = [];
+    let include = [
+      {
+        model: Comment,
+        attributes: [],
+        duplicating: false,
+        required: false,
+      },
+      {
+        model: Vote,
+        attributes: [],
+        duplicating: false,
+        required: false,
+      },
+    ];
     let where = {};
 
     if (search.name) {
@@ -97,6 +120,55 @@ router.get("/", isLoggedIn, async (req, res, next) => {
       };
     }
 
+    if (search.anagram) {
+      where = {
+        ...where,
+        anagram: {
+          [Op.iLike]: "%" + search.anagram + "%",
+        },
+      };
+    }
+
+    if (search["bio-hometown"]) {
+      where = {
+        ...where,
+        "bio.hometown": {
+          [Op.iLike]: "%" + search["bio-hometown"] + "%",
+        },
+      };
+    }
+    if (search["bio-major"]) {
+      where = {
+        ...where,
+        "bio.major": {
+          [Op.iLike]: "%" + search["bio-major"] + "%",
+        },
+      };
+    }
+    if (search["bio-hobbies"]) {
+      where = {
+        ...where,
+        "bio.hobbies": {
+          [Op.iLike]: "%" + search["bio-hobbies"] + "%",
+        },
+      };
+    }
+    if (search["bio-clubs"]) {
+      where = {
+        ...where,
+        "bio.clubs": {
+          [Op.iLike]: "%" + search["bio-clubs"] + "%",
+        },
+      };
+    }
+    if (search["bio-funfact"]) {
+      where = {
+        ...where,
+        "bio.funfact": {
+          [Op.iLike]: "%" + search["bio-funfact"] + "%",
+        },
+      };
+    }
     if (search.dinnerGroup) {
       if (search.dinnerGroup !== "any") {
         where = { ...where, dinnerGroup: search.dinnerGroup };
@@ -104,7 +176,7 @@ router.get("/", isLoggedIn, async (req, res, next) => {
     }
 
     if (search.event) {
-      include = [...include, { model: "" }];
+      include = [...include, { model: Comment, attributes: "id" }];
     }
     const query = {
       where,
@@ -112,22 +184,38 @@ router.get("/", isLoggedIn, async (req, res, next) => {
       ...(req.query.cards || search.dinnerGroup !== "any"
         ? {}
         : paginate(req.query.pageNum || 1)),
-      attributes: [
-        "pronouns",
-        "image",
-        "firstName",
-        "lastName",
-        "preferredName",
-        "bio",
-        "id",
-        "dinnerGroup",
-        "anagram",
-      ],
+      attributes: {
+        include: [
+          [
+            Sequelize.fn("COUNT", Sequelize.col('"frotator-comments".id')),
+            "comments-count",
+          ],
+          [
+            Sequelize.fn("COUNT", Sequelize.col('"frotator-votes".id')),
+            "favorites-count",
+          ],
+          "pronouns",
+          "image",
+          "firstName",
+          "lastName",
+          "preferredName",
+          "bio",
+          "id",
+          "dinnerGroup",
+          "anagram",
+        ],
+      },
     };
 
-    query.order = [["id", "ASC"]];
+    if (search.sort) {
+      query.order = SORT_OPTIONS[search.sort];
+    }
+
+    query.group = ["frotator-frosh.id"];
+
     const frosh = await Frosh.findAndCountAll(query);
 
+    frosh.count = frosh.count.length;
     frosh.count = Math.ceil(frosh.count / USERS_PER_PAGE);
     frosh.rows.forEach((f) => {
       // Tack on the display name

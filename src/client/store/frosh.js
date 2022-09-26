@@ -47,6 +47,10 @@ const init = {
   count: 1,
   search: {
     dinnerGroup: "any",
+    name: "",
+    anagram: "",
+    major: "",
+    bio: "",
   },
   selectedFroshIdx: 0,
 };

@@ -1,16 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Pagination, Accordion, Form, Button } from "react-bootstrap";
+import {
+  Pagination,
+  Accordion,
+  Form,
+  Button,
+  Offcanvas,
+  ButtonGroup,
+  ButtonToolbar,
+  Card,
+} from "react-bootstrap";
 import FroshList from "./FroshList";
 import { fetchFrosh, froshListSetPage, setSearch } from "../store/frosh";
 
 export default function FroshListMain(props) {
-  const { frosh, page, count, search } = useSelector((state) => ({
+  const { frosh, page, count, search, user } = useSelector((state) => ({
     frosh: state.frotator.frosh.list,
     count: state.frotator.frosh.count,
     page: state.frotator.frosh.page,
     search: state.frotator.frosh.search,
+    user: state.user.data,
   }));
+
+  const [showAdvanced, setShowAdvanced] = useState(false);
+
+  const handleClose = () => setShowAdvanced(false);
+  const toggleShow = () => setShowAdvanced((s) => !s);
 
   const dispatch = useDispatch();
   const handlePageMove = (newPage) => (event) => {
@@ -26,6 +41,7 @@ export default function FroshListMain(props) {
   };
 
   const onSearch = (event) => {
+    setShowAdvanced(false);
     event.preventDefault();
     dispatch(froshListSetPage(1));
     dispatch(fetchFrosh({ search, pageNum: 1 }));
@@ -33,6 +49,145 @@ export default function FroshListMain(props) {
 
   return (
     <div className="mainContent">
+      <Offcanvas
+        show={showAdvanced}
+        onHide={handleClose}
+        scroll={true}
+        backdrop={true}
+      >
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>Advanced Search Options</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+          <Form>
+            <Form.Group className="mb-3" controlId="searchFormName">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                onChange={onChange}
+                value={search.name}
+                name="name"
+                type="name"
+                placeholder="Enter Name"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3" controlId="searchFormAnagram">
+              <Form.Label>Anagram</Form.Label>
+              <Form.Control
+                onChange={onChange}
+                value={search.anagram}
+                name="anagram"
+                type="anagram"
+                placeholder="Enter Anagram"
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Dinner Group</Form.Label>
+              <Form.Select
+                onChange={onChange}
+                name="dinnerGroup"
+                value={search.dinnerGroup}
+              >
+                <option value="any">Any Dinner</option>
+                <option value="A">Dinner A</option>
+                <option value="B">Dinner B</option>
+                <option value="C">Dinner C</option>
+                <option value="D">Dinner D</option>
+                <option value="E">Linner E</option>
+                <option value="F">Dinner F</option>
+                <option value="G">Dinner G</option>
+                <option value="H">Dinner H</option>
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Sort</Form.Label>
+              <Form.Select onChange={onChange} name="sort" value={search.sort}>
+                <option value="0">Default</option>
+                <option value="1">Alphabetical</option>
+                {user.authLevel >= 4 ? (
+                  <>
+                    <option value="2">Most Comments</option>
+                    <option value="3">Least Comments</option>
+                    <option value="4">Most Favorites</option>
+                    <option value="5">Least Favorites</option>
+                  </>
+                ) : (
+                  ""
+                )}
+              </Form.Select>
+            </Form.Group>
+            <Card>
+              <Card.Body>
+                <Card.Text>Prefr*sh Bio Info</Card.Text>
+                <Form.Group className="mb-3" controlId="searchFormBioHometown">
+                  <Form.Label>Hometown</Form.Label>
+                  <Form.Control
+                    onChange={onChange}
+                    value={search["bio-hometown"]}
+                    name="bio-hometown"
+                    type="bio-hometown"
+                    placeholder="Enter Hometown"
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="searchFormBiomajor">
+                  <Form.Label>Major</Form.Label>
+                  <Form.Control
+                    onChange={onChange}
+                    value={search["bio-major"]}
+                    name="bio-major"
+                    type="bio-major"
+                    placeholder="Enter Major"
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="searchFormBiohobbies">
+                  <Form.Label>Hobbies</Form.Label>
+                  <Form.Control
+                    onChange={onChange}
+                    value={search["bio-hobbies"]}
+                    name="bio-hobbies"
+                    type="bio-hobbies"
+                    placeholder="Enter Hobbies"
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="searchFormBioclubs">
+                  <Form.Label>Clubs</Form.Label>
+                  <Form.Control
+                    onChange={onChange}
+                    value={search["bio-clubs"]}
+                    name="bio-clubs"
+                    type="bio-clubs"
+                    placeholder="Enter Clubs"
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="searchFormBioHometown">
+                  <Form.Label>Funfact</Form.Label>
+                  <Form.Control
+                    onChange={onChange}
+                    value={search["bio-funfact"]}
+                    name="bio-funfact"
+                    type="bio-funfact"
+                    placeholder="Enter Funfact"
+                  />
+                </Form.Group>
+              </Card.Body>
+            </Card>
+            <Button
+              className="m-2"
+              onClick={onSearch}
+              variant="primary"
+              type="submit"
+            >
+              Search
+            </Button>
+          </Form>
+        </Offcanvas.Body>
+      </Offcanvas>
+
       <h1>Prefr*sh List</h1>
 
       <Accordion>
@@ -44,6 +199,7 @@ export default function FroshListMain(props) {
                 <Form.Label>Name</Form.Label>
                 <Form.Control
                   onChange={onChange}
+                  value={search.name}
                   name="name"
                   type="name"
                   placeholder="Enter Name"
@@ -52,27 +208,65 @@ export default function FroshListMain(props) {
 
               <Form.Group>
                 <Form.Label>Dinner Group</Form.Label>
-                <Form.Select onChange={onChange} name="dinnerGroup">
+                <Form.Select
+                  onChange={onChange}
+                  name="dinnerGroup"
+                  value={search.dinnerGroup}
+                >
                   <option value="any">Any Dinner</option>
                   <option value="A">Dinner A</option>
                   <option value="B">Dinner B</option>
                   <option value="C">Dinner C</option>
                   <option value="D">Dinner D</option>
-                  <option value="E">Dinner E</option>
+                  <option value="E">Linner E</option>
                   <option value="F">Dinner F</option>
                   <option value="G">Dinner G</option>
                   <option value="H">Dinner H</option>
                 </Form.Select>
               </Form.Group>
 
-              <Button
-                className="mt-3"
-                onClick={onSearch}
-                variant="primary"
-                type="submit"
-              >
-                Search
-              </Button>
+              <Form.Group>
+                <Form.Label>Sort</Form.Label>
+                <Form.Select
+                  onChange={onChange}
+                  name="sort"
+                  value={search.sort}
+                >
+                  <option value="0">Default</option>
+                  <option value="1">Alphabetical</option>
+                  {user.authLevel >= 4 ? (
+                    <>
+                      <option value="2">Most Comments</option>
+                      <option value="3">Least Comments</option>
+                      <option value="4">Most Favorites</option>
+                      <option value="5">Least Favorites</option>
+                    </>
+                  ) : (
+                    ""
+                  )}
+                </Form.Select>
+              </Form.Group>
+              <ButtonToolbar>
+                <ButtonGroup>
+                  <Button
+                    className="m-2"
+                    onClick={onSearch}
+                    variant="primary"
+                    type="submit"
+                  >
+                    Search
+                  </Button>
+                </ButtonGroup>
+                <ButtonGroup>
+                  <Button
+                    variant="primary"
+                    onClick={toggleShow}
+                    className="m-2"
+                  >
+                    Advanced Search
+                  </Button>
+                </ButtonGroup>
+              </ButtonToolbar>
             </Form>
           </Accordion.Body>
         </Accordion.Item>
