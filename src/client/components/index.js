@@ -8,3 +8,4 @@ export { default as Comment } from "./Comment";
 export { default as Leaderboard } from "./Leaderboard";
 export { default as Flashcards } from "./Flashcards";
 export { default as Flashcard } from "./Flashcard";
+export { default as Spam } from "./Spam";

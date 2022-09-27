@@ -87,6 +87,30 @@ export default function FrotatorHome() {
           ></div>
         </Row>
       </Card>
+
+      <Card
+        className="home-card m-3"
+        onClick={() => navigate("/frotator/spam")}
+      >
+        <Row className="p-3">
+          <div className="col col-sm-12 col-md-6 d-flex align-items-center">
+            <div className="m-2 ">
+              <h5>Spam</h5>
+              <p>
+                Want to spam Norman during meetings? You're in luck, frotator
+                has a new feature!!!
+              </p>
+            </div>
+          </div>
+          <div
+            className="col col-sm-12 col-md-6 home-card-img"
+            style={{
+              backgroundImage:
+                "url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwBY7WD7yjOFBZhfQgCRMeju_KSmP9MEC1rzMmjFY8_A&s')",
+            }}
+          ></div>
+        </Row>
+      </Card>
     </Container>
   );
 }

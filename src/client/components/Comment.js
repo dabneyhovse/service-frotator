@@ -16,13 +16,17 @@ export default function Comment(props) {
     <>
       <MDBCardBody className="p-4">
         <div className="d-flex flex-start">
-          <MDBCardImage
-            className="rounded-circle shadow-1-strong me-3"
-            src={props.comment.from.profile.photo}
-            alt="avatar"
-            width="60"
-            height="60"
-          />
+          {props.spam ? (
+            ""
+          ) : (
+            <MDBCardImage
+              className="rounded-circle shadow-1-strong me-3"
+              src={props.comment.from.profile.photo}
+              alt="avatar"
+              width="60"
+              height="60"
+            />
+          )}
           <div>
             <MDBTypography tag="h6" className="fw-bold mb-1">
               {props.comment.from.username}
