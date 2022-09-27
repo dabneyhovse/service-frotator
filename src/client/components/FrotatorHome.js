@@ -92,7 +92,7 @@ export default function FrotatorHome() {
         className="home-card m-3"
         onClick={() => navigate("/frotator/spam")}
       >
-        <Row className="p-3">
+        <Row className="p-3" style={{ width: "100%" }}>
           <div className="col col-sm-12 col-md-6 d-flex align-items-center">
             <div className="m-2 ">
               <h5>Spam</h5>
