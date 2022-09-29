@@ -68,10 +68,22 @@ const paginate = (page) => {
 const SORT_OPTIONS = {
   0: [["id", "ASC"]],
   1: [["lastName", "ASC"]],
-  2: [[Sequelize.col("commentsCount"), "DESC"], ["id", "ASC"]],
-  3: [[Sequelize.col("commentsCount"), "ASC"], ["id", "ASC"]],
-  4: [[Sequelize.col("favoritesCount"), "DESC"], ["id", "ASC"]],
-  5: [[Sequelize.col("favoritesCount"), "ASC"], ["id", "ASC"]],
+  2: [
+    [Sequelize.col("commentsCount"), "DESC"],
+    ["id", "ASC"],
+  ],
+  3: [
+    [Sequelize.col("commentsCount"), "ASC"],
+    ["id", "ASC"],
+  ],
+  4: [
+    [Sequelize.col("favoritesCount"), "DESC"],
+    ["id", "ASC"],
+  ],
+  5: [
+    [Sequelize.col("favoritesCount"), "ASC"],
+    ["id", "ASC"],
+  ],
 };
 
 router.get("/", isLoggedIn, async (req, res, next) => {
@@ -82,19 +94,28 @@ router.get("/", isLoggedIn, async (req, res, next) => {
      * to the query
      */
     let include = [
-      {
-        model: Comment,
-        attributes: [],
-        duplicating: false,
-        required: search.sort == 2 || search.sort == 3,
-      },
-      {
-        model: Vote,
-        attributes: [],
-        duplicating: false,
-        required: search.sort == 4 || search.sort == 5,
-      },
+      ...(search.sort == 2 || search.sort == 3
+        ? [
+            {
+              model: Comment,
+              attributes: [],
+              duplicating: false,
+              required: true,
+            },
+          ]
+        : []),
+      ...(search.sort == 4 || search.sort == 5
+        ? [
+            {
+              model: Vote,
+              attributes: [],
+              duplicating: false,
+              required: search.sort == 4 || search.sort == 5,
+            },
+          ]
+        : []),
     ];
+
     let where = {};
 
     if (search.name) {
@@ -186,14 +207,25 @@ router.get("/", isLoggedIn, async (req, res, next) => {
         : paginate(req.query.pageNum || 1)),
       attributes: {
         include: [
-          [
-            Sequelize.fn("COUNT", Sequelize.col('"frotator-comments".id')),
-            "commentsCount",
-          ],
-          [
-            Sequelize.fn("COUNT", Sequelize.col('"frotator-votes".id')),
-            "favoritesCount",
-          ],
+          ...(search.sort == 2 || search.sort == 3
+            ? [
+                [
+                  Sequelize.fn(
+                    "COUNT",
+                    Sequelize.col('"frotator-comments".id')
+                  ),
+                  "commentsCount",
+                ],
+              ]
+            : []),
+          ...(search.sort == 4 || search.sort == 5
+            ? [
+                [
+                  Sequelize.fn("COUNT", Sequelize.col('"frotator-votes".id')),
+                  "favoritesCount",
+                ],
+              ]
+            : []),
           "pronouns",
           "image",
           "firstName",
@@ -214,6 +246,8 @@ router.get("/", isLoggedIn, async (req, res, next) => {
     }
 
     query.group = ["frotator-frosh.id"];
+
+    console.log(query);
 
     const frosh = await Frosh.findAndCountAll(query);
 
