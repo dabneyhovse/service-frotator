@@ -68,10 +68,10 @@ const paginate = (page) => {
 const SORT_OPTIONS = {
   0: [["id", "ASC"]],
   1: [["lastName", "ASC"]],
-  2: [[Sequelize.col("commentsCount"), "DESC"]],
-  3: [[Sequelize.col("commentsCount"), "ASC"]],
-  4: [[Sequelize.col("favoritesCount"), "DESC"]],
-  5: [[Sequelize.col("favoritesCount"), "ASC"]],
+  2: [[Sequelize.col("commentsCount"), "DESC"], ["id", "ASC"]],
+  3: [[Sequelize.col("commentsCount"), "ASC"], ["id", "ASC"]],
+  4: [[Sequelize.col("favoritesCount"), "DESC"], ["id", "ASC"]],
+  5: [[Sequelize.col("favoritesCount"), "ASC"], ["id", "ASC"]],
 };
 
 router.get("/", isLoggedIn, async (req, res, next) => {
