@@ -5,7 +5,9 @@ import { io } from "socket.io-client";
 const socket = io();
 
 socket.on("serverNorman", (arg) => {
-  toast.success(`${arg.from.username}:\t${arg.text}`);
+  if (window.location.pathname.indexOf("/frotator") == 0) {
+    toast.info(`${arg.from.username}:\t${arg.text}`);
+  }
 });
 
 export default socket;
