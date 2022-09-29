@@ -68,10 +68,10 @@ const paginate = (page) => {
 const SORT_OPTIONS = {
   0: [["id", "ASC"]],
   1: [["lastName", "ASC"]],
-  2: [[Sequelize.col("comments-count"), "DESC"]],
-  3: [[Sequelize.col("comments-count"), "ASC"]],
-  4: [[Sequelize.col("favorites-count"), "DESC"]],
-  5: [[Sequelize.col("favorites-count"), "ASC"]],
+  2: [[Sequelize.col("commentsCount"), "DESC"]],
+  3: [[Sequelize.col("commentsCount"), "ASC"]],
+  4: [[Sequelize.col("favoritesCount"), "DESC"]],
+  5: [[Sequelize.col("favoritesCount"), "ASC"]],
 };
 
 router.get("/", isLoggedIn, async (req, res, next) => {
@@ -86,13 +86,13 @@ router.get("/", isLoggedIn, async (req, res, next) => {
         model: Comment,
         attributes: [],
         duplicating: false,
-        required: false,
+        required: search.sort == 2 || search.sort == 3,
       },
       {
         model: Vote,
         attributes: [],
         duplicating: false,
-        required: false,
+        required: search.sort == 4 || search.sort == 5,
       },
     ];
     let where = {};
@@ -188,11 +188,11 @@ router.get("/", isLoggedIn, async (req, res, next) => {
         include: [
           [
             Sequelize.fn("COUNT", Sequelize.col('"frotator-comments".id')),
-            "comments-count",
+            "commentsCount",
           ],
           [
             Sequelize.fn("COUNT", Sequelize.col('"frotator-votes".id')),
-            "favorites-count",
+            "favoritesCount",
           ],
           "pronouns",
           "image",
@@ -209,6 +209,8 @@ router.get("/", isLoggedIn, async (req, res, next) => {
 
     if (search.sort) {
       query.order = SORT_OPTIONS[search.sort];
+      if (search.sort == 4 || search.sort == 5) {
+      }
     }
 
     query.group = ["frotator-frosh.id"];
