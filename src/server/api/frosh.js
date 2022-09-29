@@ -217,6 +217,9 @@ router.get("/", isLoggedIn, async (req, res, next) => {
 
     frosh.count = frosh.count.length;
     frosh.count = Math.ceil(frosh.count / USERS_PER_PAGE);
+    if (search.dinnerGroup !== "any") {
+      frosh.count = 1;
+    }
     frosh.rows.forEach((f) => {
       // Tack on the display name
       f.dataValues.displayName = f.safeName();
