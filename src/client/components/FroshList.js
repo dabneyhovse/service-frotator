@@ -10,7 +10,7 @@ export default function FroshList(props) {
     <Container>
       <Row>
         {props.frosh.map((f) => {
-          return <FroshListItem key={f.id} frosh={f} />;
+          return <FroshListItem key={f.id} frosh={f} offcanvas={props.offcanvas} />;
         })}
       </Row>
     </Container>

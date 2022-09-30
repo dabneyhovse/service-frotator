@@ -247,8 +247,6 @@ router.get("/", isLoggedIn, async (req, res, next) => {
 
     query.group = ["frotator-frosh.id"];
 
-    console.log(query);
-
     const frosh = await Frosh.findAndCountAll(query);
 
     frosh.count = frosh.count.length;
@@ -261,6 +259,134 @@ router.get("/", isLoggedIn, async (req, res, next) => {
       f.dataValues.displayName = f.safeName();
     });
     res.status(200).json(frosh);
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * This will be mounted at the following route:
+ *
+ * GET dabney.caltech.edu/api/frotator/frosh/:froshId
+ *
+ * returns a json list of the ranked frosh
+ *
+ */
+router.get("/ranking", isAdmin, async (req, res, next) => {
+  try {
+    const frosh = await Frosh.findAll({
+      where: {
+        [Op.not]: { rank: -1 },
+      },
+      attributes: [
+        "firstName",
+        "lastName",
+        "preferredName",
+        "image",
+        "id",
+        "rank",
+        "anagram",
+      ],
+      order: [["rank", "DESC"]],
+    });
+
+    frosh.forEach((f) => {
+      // Tack on the display name
+      f.dataValues.displayName = f.safeName();
+      f.displayName = f.safeName();
+    });
+    res.json(frosh);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.put("/ranking", isAdmin, async (req, res, next) => {
+  try {
+    const froshId = req.body.froshId;
+    const rank = req.body.rank;
+
+    const oldFrosh = await Frosh.findOne({
+      where: {
+        id: froshId,
+      },
+    });
+
+    const moveUp = rank > oldFrosh.rank;
+
+    let frosh = null;
+    if (rank == 0) {
+      let shift = await Frosh.findAll({
+        where: {
+          [Op.not]: { ["rank"]: -1 },
+          ["rank"]: { [Op.gte]: rank },
+        },
+        attributes: ["id", "rank"],
+        order: [
+          ["rank", "DESC"],
+          ["id", "ASC"],
+        ],
+      });
+      for (let i = 0; i < shift.length; i++) {
+        shift[i].rank + 1;
+        await shift[i].save();
+      }
+    } else if (rank == -1) {
+      // do nothing to the others
+    } else {
+      frosh = await Frosh.findOne({ where: { ["rank"]: rank } });
+      if (frosh) {
+        // shift all the other frosh down
+        frosh.rank = frosh.rank + (moveUp ? -1 : 1);
+        frosh.save();
+      }
+    }
+
+    // const frosh = await Frosh.findAll({
+    //   where: {
+    //     [Op.not]: { ["rank"]: -1 },
+    //     ["rank"]: { [Op.gte]: rank },
+    //   },
+    //   attributes: ["id", "rank"],
+    //   order: [
+    //     ["rank", "DESC"],
+    //     ["id", "ASC"],
+    //   ],
+    // });
+
+    const newFrosh = await Frosh.findOne({
+      where: {
+        id: froshId,
+      },
+    });
+    newFrosh.rank = rank;
+    await newFrosh.save();
+
+    const updatedRanking = await Frosh.findAll({
+      where: {
+        [Op.not]: { ["rank"]: -1 },
+      },
+      attributes: [
+        "firstName",
+        "lastName",
+        "preferredName",
+        "anagram",
+        "image",
+        "id",
+        "rank",
+      ],
+      order: [
+        ["rank", "DESC"],
+        ["id", "ASC"],
+      ],
+    });
+
+    updatedRanking.forEach((f) => {
+      // Tack on the display name
+      f.dataValues.displayName = f.safeName();
+    });
+
+    res.json(updatedRanking);
   } catch (error) {
     next(error);
   }
@@ -324,28 +450,6 @@ router.get("/:froshId", isLoggedIn, async (req, res, next) => {
     }
 
     res.status(200).json(frosh);
-  } catch (error) {
-    next(error);
-  }
-});
-
-/**
- * This will be mounted at the following route:
- *
- * GET dabney.caltech.edu/api/frotator/frosh/:froshId
- *
- * returns a json list of the ranked frosh
- *
- */
-router.get("/ranking", isAdmin, async (req, res, next) => {
-  try {
-    const frosh = await Frosh.findAll({
-      where: {
-        [Op.not]: { rank: null },
-      },
-      order: [["rank", "ASC"]],
-    });
-    res.json(frosh);
   } catch (error) {
     next(error);
   }
@@ -499,7 +603,6 @@ router.put("/", isAdmin, upload.single("csv-file"), async (req, res, next) => {
 
             await frosh.save();
           } else {
-            console.log("\t Could not find frosh:", curr);
           }
         }
         res.sendStatus(201);

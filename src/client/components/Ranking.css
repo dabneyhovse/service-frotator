@@ -1,0 +1,7 @@
+.rankingListFrosh {
+  margin: 10px;
+
+  height: 20vh;
+  display: flex;
+  flex-direction: row;
+}

@@ -12,6 +12,7 @@ import {
   SingleFrosh,
   Leaderboard,
   Spam,
+  Ranking,
 } from "./components";
 import { fetchFrosh } from "./store/frosh";
 import { frotatorAddSpam } from "./store/spam";
@@ -41,6 +42,7 @@ export default function FrotatorMain() {
       <Route exact path="/spam" element={<Spam />} />
       <Route exact path="/quiz" element={<Quiz />} />
       <Route exact path="/quiz/leaderboard" element={<Leaderboard />} />
+      <Route exact path="bigbad" element={<Ranking />} />
     </Routes>
   );
 }

@@ -32,3 +32,16 @@
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.8);
   margin: 10px;
 }
+
+.offcanvasfrosh .frosh-list-image {
+  padding-top: 80%;
+}
+
+.offcanvasfrosh .frosh-list-image:hover {
+  margin: 0px;
+}
+
+.rankingListFrosh .frosh-list-image:hover {
+  margin: 0px;
+}
+

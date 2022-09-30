@@ -1,16 +1,34 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { updateRanking } from "../store/ranking";
+
+import { Button } from "react-bootstrap";
 
 function FroshListItem(props) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleAdd = () => {
+    dispatch(updateRanking(props.frosh.id, 0));
+  };
+
   return (
     <div
       key={props.frosh.id}
-      className="frosh-list-item co-xl-3 col-lg-4 col-md-6 col-sm-6 col-xs-12 container"
+      className={
+        "frosh-list-item container" +
+        (props.offcanvas
+          ? "col col-12 mt-2 offcanvasfrosh"
+          : "col-xl-3 col-lg-4 col-md-6 col-sm-6 col-xs-12")
+      }
     >
       <div
         onClick={() => {
-          navigate(`/frotator/frosh/${props.frosh.id}`);
+          if (props.offcanvas) {
+          } else {
+            navigate(`/frotator/frosh/${props.frosh.id}`);
+          }
         }}
         className="frosh-list-image"
         style={{
@@ -20,6 +38,11 @@ function FroshListItem(props) {
         }}
       >
         <div className="frosh-info">{props.frosh.displayName}</div>
+        {props.offcanvas ? (
+          <Button onClick={handleAdd}> Add To Big Bad </Button>
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );

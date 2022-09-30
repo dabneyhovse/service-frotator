@@ -2,6 +2,7 @@ import { combineReducers } from "redux";
 import frosh from "./frosh";
 import singleFrosh from "./singleFrosh";
 import spam from "./spam";
+import ranking from "./ranking";
 
 /**
  * this reducer will become part of the main reducer in the app
@@ -20,6 +21,7 @@ const reducer = combineReducers({
   frosh,
   singleFrosh,
   spam,
+  ranking,
 });
 
 export default reducer;

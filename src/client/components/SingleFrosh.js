@@ -103,6 +103,17 @@ export default function SingleFrosh() {
           <Button
             className="m-1"
             onClick={() => {
+              navigate(-1);
+            }}
+          >
+            Back
+          </Button>
+        </ButtonGroup>
+
+        <ButtonGroup>
+          <Button
+            className="m-1"
+            onClick={() => {
               navigate("/frotator/frosh");
             }}
           >
