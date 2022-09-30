@@ -37,8 +37,13 @@
   padding-top: 80%;
 }
 
+
+.offcanvasfrosh .frosh-list-image {
+  margin-bottom: 20px;
+}
+
 .offcanvasfrosh .frosh-list-image:hover {
-  margin: 0px;
+  margin-bottom: 20px;
 }
 
 .rankingListFrosh .frosh-list-image:hover {
