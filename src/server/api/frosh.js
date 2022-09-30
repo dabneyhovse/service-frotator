@@ -328,7 +328,7 @@ router.put("/ranking", isAdmin, async (req, res, next) => {
         ],
       });
       for (let i = 0; i < shift.length; i++) {
-        shift[i].rank + 1;
+        shift[i].rank = shift[i].rank + 1;
         await shift[i].save();
       }
     } else if (rank == -1) {
