@@ -319,7 +319,7 @@ router.put("/ranking", isAdmin, async (req, res, next) => {
       let shift = await Frosh.findAll({
         where: {
           [Op.not]: { ["rank"]: -1 },
-          ["rank"]: { [Op.gte]: rank },
+          ["rank"]: { [Op.gte]: 0 },
         },
         attributes: ["id", "rank"],
         order: [
