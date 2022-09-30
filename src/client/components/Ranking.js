@@ -344,8 +344,8 @@ export default function Ranking(props) {
         Prefr*sh List
       </Button>
       <Row>
-        {rankingList.map((frosh) => (
-          <RankingFroshCard frosh={frosh} />
+        {rankingList.map((frosh, i) => (
+          <RankingFroshCard frosh={frosh} i={i}/>
         ))}
       </Row>
     </div>

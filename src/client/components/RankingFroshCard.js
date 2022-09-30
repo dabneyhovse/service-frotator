@@ -27,6 +27,7 @@ function FroshListItem(props) {
       ></div>
       <div className="col-8 m-4">
         <h4>{props.frosh.displayName}</h4>
+        <small>#{props.i}</small>
         <p>{props.frosh.anagram}</p>
         <ButtonToolbar>
           <ButtonGroup>
