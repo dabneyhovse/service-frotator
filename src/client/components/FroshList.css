@@ -2,6 +2,7 @@
   border-radius: 5px;
   height: 30vh;
   padding: 10px;
+  margin-bottom: 3vh;
 }
 
 .frosh-info {
@@ -37,7 +38,6 @@
   padding-top: 80%;
 }
 
-
 .offcanvasfrosh .frosh-list-image {
   margin-bottom: 20px;
 }
@@ -49,4 +49,3 @@
 .rankingListFrosh .frosh-list-image:hover {
   margin: 0px;
 }
-
