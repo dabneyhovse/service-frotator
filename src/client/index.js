@@ -20,10 +20,10 @@ import { frotatorAddSpam } from "./store/spam";
 export default function FrotatorMain() {
   const dispatch = useDispatch();
 
-  const { search, page } = useSelector((state) => ({
-    search: state.frotator.frosh.search,
-
-    page: state.frotator.frosh.page,
+  const { loaded, search, page } = useSelector((state) => ({
+    loaded: state.frotator !== undefined,
+    search: state.frotator !== undefined ? state.frotator.frosh.search : "",
+    page: state.frotator !== undefined ? state.frotator.frosh.page : "",
   }));
   useEffect(() => {
     dispatch(fetchFrosh({ search, pageNum: page }));
@@ -32,6 +32,9 @@ export default function FrotatorMain() {
       // unmount stuff
     };
   }, []);
+  if (!loaded) {
+    return <></>;
+  }
 
   return (
     <Routes>
