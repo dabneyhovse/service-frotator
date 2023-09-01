@@ -52,7 +52,7 @@ export default function frotatorSettings() {
     const formData = new FormData();
     formData.append("csv-file", selectedSeedFile);
     try {
-      const res = await axios({
+      const res = await Axios({
         method: "post",
         url: "/api/frotator/frosh",
         data: formData,
@@ -82,10 +82,11 @@ export default function frotatorSettings() {
                 <MDBCol sm="12">
                   <MDBCardText>
                     The frosh data we get from admin. Expects a csv file that at
-                    least has an "email" col we can identify frosh by. It also
-                    accepts the following columns: fullName, lastName,
-                    preferredName, photo, pronouns, bio-hometown, bio-major,
-                    bio-hobbies, bio-clubs, bio-funfact
+                    least has an "email" col (
+                    <b>the email col should be first</b>) we can identify frosh
+                    by. It also accepts the following columns: fullName,
+                    lastName, preferredName, photo, pronouns, bio-hometown,
+                    bio-major, bio-hobbies, bio-clubs, bio-funfact
                   </MDBCardText>
                 </MDBCol>
               </MDBRow>
@@ -119,10 +120,11 @@ export default function frotatorSettings() {
                     Upload any extra frosh data here to update any values
                     currently within the database. Useful if for some reason you
                     dont recieve all the information about the frosh at once.
-                    This csv file must contain an "email" column to match to
-                    existing frosh. Other accepted columns include: fullName,
-                    lastName, preferredName, photo, pronouns, bio-hometown,
-                    bio-major, bio-hobbies, bio-clubs, bio-funfact
+                    This csv file must contain an "email" column (
+                    <b>the email col should be first</b>)to match to existing
+                    frosh. Other accepted columns include: fullName, lastName,
+                    preferredName, photo, pronouns, bio-hometown, bio-major,
+                    bio-hobbies, bio-clubs, bio-funfact
                   </MDBCardText>
                 </MDBCol>
               </MDBRow>

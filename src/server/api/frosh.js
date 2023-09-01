@@ -6,6 +6,7 @@ const fs = require("fs");
 const { Duplex } = require("stream"); // Native Node Module
 const Axios = require("axios");
 const Vote = require("../db/models/vote");
+const { Readable } = require("stream");
 
 const router = require("express").Router();
 
@@ -17,9 +18,8 @@ module.exports = router;
  * @returns stream
  */
 function bufferToStream(myBuffer) {
-  let tmp = new Duplex();
-  tmp.push(myBuffer);
-  tmp.push(null);
+  tmp = Readable.from(myBuffer);
+  tmp.setEncoding("utf8");
   return tmp;
 }
 
@@ -472,20 +472,81 @@ router.get("/:froshId", isLoggedIn, async (req, res, next) => {
  *
  * returns status 201 on success
  */
-router.post("/", isLoggedIn, upload.single("data"), async (req, res, next) => {
-  try {
-    fs.createReadStream(req.file.path)
-      .pipe(parse({ delimiter: "," }))
-      .on("data", function (csvrow) {
-        csvData.push(csvrow);
-      })
-      .on("end", function () {
-        res.sendStatus(201);
-      });
-  } catch (error) {
-    next(error);
+
+const updateable = [
+  "firstName",
+  "lastName",
+  "preferredName",
+  "pronouns",
+  "year",
+  "email",
+  "groupName",
+  "anagram",
+  "image",
+  "rank",
+  "bioPDF",
+  "bio",
+  "dinnerGroup",
+  "uuid",
+];
+
+router.post(
+  "/",
+  isLoggedIn,
+  upload.single("csv-file"),
+  async (req, res, next) => {
+    try {
+      csvData = [];
+      bufferToStream(req.file.buffer)
+        .pipe(
+          parse({
+            delimiter: ",",
+            encoding: "utf-8",
+            columns: (cols) => {
+              return cols.map((c) => (c.includes("email") ? "email" : c));
+            },
+          })
+        )
+        .on("data", function (csvrow) {
+          csvData.push(csvrow);
+        })
+        .on("end", async function () {
+          for (let i = 0; i < csvData.length; i++) {
+            const curr = csvData[i];
+
+            bio = {};
+            toUpdate = {};
+
+            Object.keys(curr).forEach((key) => {
+              if (key.indexOf("bio-") == 0) {
+                bio[key.replace("bio-", "")] = curr[key];
+              }
+              if (updateable.indexOf(key) !== -1) {
+                toUpdate[key] = curr[key];
+              }
+              if (key == "uuid") {
+                toUpdate[
+                  "image"
+                ] = `/resources/images/prefrosh_images/000${curr[key]}.jpg`;
+              }
+            });
+
+            let frosh;
+            frosh = await Frosh.findOrCreate({ where: toUpdate });
+            if (!!frosh) {
+              frosh = frosh[0];
+            }
+            frosh.set(toUpdate); // so it catches json info (bio)
+            // TODO: for some reason the json field wont update
+            await frosh.save();
+          }
+          res.sendStatus(201);
+        });
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 router.post("/favorite", async (req, res, next) => {
   try {
@@ -512,30 +573,24 @@ router.post("/favorite", async (req, res, next) => {
 router.put("/", isAdmin, upload.single("csv-file"), async (req, res, next) => {
   try {
     const myReadableStream = bufferToStream(req.file.buffer);
-    const updateable = [
-      "preferredName",
-      "pronouns",
-      "year",
-      "email",
-      "groupName",
-      "anagram",
-      "image",
-      "rank",
-      "bioPDF",
-      "bio",
-      "dinnerGroup",
-      "uuid",
-    ];
 
     csvData = [];
     myReadableStream
-      .pipe(parse({ delimiter: ",", columns: true }))
+      .pipe(
+        parse({
+          delimiter: ",",
+          encoding: "utf-8",
+          columns: (cols) => {
+            return cols.map((c) => (c.includes("email") ? "email" : c));
+          },
+        })
+      )
       .on("data", function (csvrow) {
         csvData.push(csvrow);
       })
       .on("end", async () => {
-        for (let i = 1; i < csvData.length; i++) {
-          const curr = csvData[i];
+        for (let i = 0; i < csvData.length; i++) {
+          const curr = { ...csvData[i] };
 
           let frosh;
           if (curr.froshId) {
@@ -545,7 +600,7 @@ router.put("/", isAdmin, upload.single("csv-file"), async (req, res, next) => {
             frosh = await Frosh.findOne({
               where: {
                 email: {
-                  [Sequelize.Op.iLike]: curr.email,
+                  [Sequelize.Op.iLike]: curr["email"],
                 },
               },
             });
@@ -595,6 +650,7 @@ router.put("/", isAdmin, upload.single("csv-file"), async (req, res, next) => {
             });
 
             toUpdate = { ...toUpdate, bio };
+            // // used for ihc personal poll to the incoming frosh
             // if (toUpdate.image) {
             //   toUpdate.image = googleDriveImageToSRC(toUpdate.image);
             // }
