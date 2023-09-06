@@ -202,7 +202,7 @@ router.get("/", isLoggedIn, async (req, res, next) => {
     const query = {
       where,
       include,
-      ...(req.query.cards || search.dinnerGroup !== "any"
+      ...(req.query.cards || search.dinnerGroup !== "any" || search.only_my_favorites
         ? {}
         : paginate(req.query.pageNum || 1)),
       attributes: {
@@ -249,9 +249,15 @@ router.get("/", isLoggedIn, async (req, res, next) => {
 
     const frosh = await Frosh.findAndCountAll(query);
 
+    if (search.only_my_favorites) {
+      const favorite_frosh_votes = await Vote.findAll({where : {userId : req.user.id}});
+      const favorite_frosh_ids = [...favorite_frosh_votes].map((v) => v.dataValues.frotatorFroshId);
+      frosh.rows = frosh.rows.filter((f) => favorite_frosh_ids.includes(f.id));
+    }
+
     frosh.count = frosh.count.length;
     frosh.count = Math.ceil(frosh.count / USERS_PER_PAGE);
-    if (search.dinnerGroup !== "any") {
+    if (search.dinnerGroup !== "any" || search.only_my_favorites) {
       frosh.count = 1;
     }
     frosh.rows.forEach((f) => {
