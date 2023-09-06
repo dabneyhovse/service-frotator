@@ -1,6 +1,6 @@
 {
   "name": "service-frotator",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {},
@@ -32,11 +32,20 @@
   },
   "exports": {
     ".": "./service.config.js",
-    "./Config": "./service.config.js",
+    "./Config": {
+      "require": "./service.config.js",
+      "default": "./service.config.js"
+    },
     "./React": "./src/client/index.js",
     "./Redux": "./src/client/store/index.js",
     "./Admin": "./src/client/admin_components/index.js",
-    "./Express": "./src/server/api/index.js",
-    "./Database": "./src/server/db/index.js"
+    "./Express": {
+      "require": "./src/server/api/index.js",
+      "default": "./src/server/api/index.js"
+    },
+    "./Database": {
+      "default": "./src/server/db/index.js",
+      "require": "./src/server/db/index.js"
+    }
   }
 }
