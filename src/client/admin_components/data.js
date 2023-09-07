@@ -16,12 +16,17 @@ import {
 } from "mdb-react-ui-kit";
 
 import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
 import { toast } from "react-toastify";
 import Axios from "axios";
 
 export default function frotatorSettings() {
   const [selectedSeedFile, setSelectedSeedFile] = useState(null);
   const [selectedUpdateFile, setSelectedUpdateFile] = useState(null);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(null);
+
+  const handleShowDeleteConfirmModal = () => setShowDeleteConfirmModal(true);
+  const handleHideDeleteConfirmModal = () => setShowDeleteConfirmModal(false);
 
   const handleUpdateFileSelect = (event) => {
     setSelectedUpdateFile(event.target.files[0]);
@@ -61,6 +66,19 @@ export default function frotatorSettings() {
       toast.success("The seed file was sucessfully uploaded.");
     } catch (error) {
       toast.error("There was an error submitting the seed file.");
+    }
+  };
+
+  const handleDelete = async (event) => {
+    event.preventDefault();
+    try {
+
+      const res = await Axios.delete(
+        "/api/frotator/frosh"
+      );
+      toast.success("The data was successfully deleted.");
+    } catch (error) {
+      toast.error("There was an error deleting the data.");
     }
   };
 
@@ -141,8 +159,41 @@ export default function frotatorSettings() {
               </MDBRow>
             </MDBCardBody>
           </MDBCard>
+
+          <MDBCard className="mb-4">
+            <MDBCardBody>
+              <MDBRow>
+                <MDBCol sm="12">
+                  <MDBCardText>
+                    <strong>Delete All Frosh Data</strong>
+                  </MDBCardText>
+                </MDBCol>
+              </MDBRow>
+              <hr />
+              <Button type="submit" variant="danger" onClick={handleShowDeleteConfirmModal}>
+                Delete Data
+              </Button>
+            </MDBCardBody>
+          </MDBCard>
         </MDBCol>
       </MDBRow>
+
+      <Modal show={showDeleteConfirmModal}>
+        <Modal.Header>
+          <Modal.Title>Are you sure you want to delete all frosh data?</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Doing this will remove all frosh data in the Frotator database.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button type="submit" variant="danger" onClick={(event) => { handleDelete(event); handleHideDeleteConfirmModal(); }}>
+            Yes
+          </Button>
+          <Button type="secondary" onClick={handleHideDeleteConfirmModal}>
+            No
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </MDBContainer>
   );
 }

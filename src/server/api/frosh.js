@@ -668,3 +668,12 @@ router.put("/", isAdmin, upload.single("csv-file"), async (req, res, next) => {
     next(error);
   }
 });
+
+router.delete("/", isAdmin, async (req, res, next) => {
+  try {
+    await Frosh.truncate({cascade : true});
+    res.sendStatus(200);
+  } catch (error) {
+    next(error);
+  }
+});
