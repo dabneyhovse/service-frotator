@@ -41,9 +41,7 @@ export default function FroshListMain(props) {
   };
 
   const onChange_checkbox = (event) => {
-    dispatch(
-      setSearch({ ...search, [event.target.name]: event.target.checked })
-    );
+    dispatch(setSearch({ ...search, [event.target.name]: event.target.checked }));
   };
 
   const onSearch = (event) => {
@@ -255,15 +253,8 @@ export default function FroshListMain(props) {
 
               <Form.Group className="my-2">
                 <Form.Check>
-                  <Form.Check.Input
-                    id="only_my_favorites_checkbox"
-                    name="only_my_favorites"
-                    checked={search.only_my_favorites}
-                    onChange={onChange_checkbox}
-                  />
-                  <Form.Check.Label htmlFor="only_my_favorites_checkbox">
-                    Show only my favorites
-                  </Form.Check.Label>
+                  <Form.Check.Input id="only_my_favorites_checkbox" name="only_my_favorites" checked={search.only_my_favorites} onChange={onChange_checkbox} />
+                  <Form.Check.Label htmlFor="only_my_favorites_checkbox">Show only my favorites</Form.Check.Label>
                 </Form.Check>
               </Form.Group>
 
