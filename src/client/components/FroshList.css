@@ -1,8 +1,9 @@
 .frosh-list-item {
   border-radius: 5px;
-  height: 30vh;
+  min-height: 30vh;
   padding: 10px;
-  padding-bottom: 80px;
+  /* incase smth is really weird with the display */
+  /* padding-bottom: 80px; */
   margin-bottom: 3vh;
 }
 
