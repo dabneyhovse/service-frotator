@@ -633,6 +633,38 @@ router.put("/", isAdmin, upload.single("csv-file"), async (req, res, next) => {
               },
             });
           }
+          // try to check off of name col (from donut probably since they dont seperate firstname and lastname)
+          if (!frosh) {
+            frosh = await Frosh.findOne({
+              where: {
+                // check if name matches either concatted firstName, lastName or preferredName, lastName
+                [Sequelize.Op.or]: [
+                  Sequelize.where(
+                    Sequelize.fn(
+                      "concat",
+                      Sequelize.col("firstName"),
+                      " ",
+                      Sequelize.col("lastName")
+                    ),
+                    {
+                      [Sequelize.Op.iLike]: curr.name,
+                    }
+                  ),
+                  Sequelize.where(
+                    Sequelize.fn(
+                      "concat",
+                      Sequelize.col("preferredName"),
+                      " ",
+                      Sequelize.col("lastName")
+                    ),
+                    {
+                      [Sequelize.Op.iLike]: curr.name,
+                    }
+                  ),
+                ],
+              },
+            });
+          }
 
           if (frosh) {
             let bio = {
@@ -677,7 +709,7 @@ router.put("/", isAdmin, upload.single("csv-file"), async (req, res, next) => {
 
 router.delete("/", isAdmin, async (req, res, next) => {
   try {
-    await Frosh.truncate({cascade : true});
+    await Frosh.truncate({ cascade: true });
     res.sendStatus(200);
   } catch (error) {
     next(error);
