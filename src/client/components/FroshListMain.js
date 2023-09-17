@@ -238,7 +238,6 @@ export default function FroshListMain(props) {
                   name="sort"
                   value={search.sort}
                 >
-                  <option value="0">Default</option>
                   <option value="1">Alphabetical</option>
                   {user.authLevel >= 4 ? (
                     <>
