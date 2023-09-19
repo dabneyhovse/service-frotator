@@ -110,7 +110,7 @@ export default function Ranking(props) {
                 <option value="B">Dinner B</option>
                 <option value="C">Dinner C</option>
                 <option value="D">Dinner D</option>
-                <option value="E">Linner E</option>
+                <option value="E">Dinner E</option>
                 <option value="F">Dinner F</option>
                 <option value="G">Dinner G</option>
                 <option value="H">Dinner H</option>
