@@ -67,7 +67,10 @@ const paginate = (page) => {
 
 const SORT_OPTIONS = {
   0: [["id", "ASC"]],
-  1: [["lastName", "ASC"]],
+  1: [
+    ["lastName", "ASC"],
+    ["preferredName", "ASC"],
+  ],
   2: [
     [Sequelize.col("commentsCount"), "DESC"],
     ["id", "ASC"],

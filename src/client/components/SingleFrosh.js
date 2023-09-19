@@ -161,19 +161,19 @@ export default function SingleFrosh() {
                         {frosh.favorite ? "Unf" : "F"}avorite this prefr*sh
                       </Button>
                     </ButtonGroup>
-                    <ButtonGroup className="me-2" aria-label="Concern Group">
+                    {/* <ButtonGroup className="me-2" aria-label="Concern Group">
                       <Button
                         variant="warning"
                         onClick={() => {
                           // TODO fix this tonight
                           toast.error(
-                            "There was an error reporting a your concern"
+                            "There was an error reporting your concern"
                           );
                         }}
                       >
                         Report a Concern
                       </Button>
-                    </ButtonGroup>
+                    </ButtonGroup> */}
                   </ButtonToolbar>
                 </div>
               </MDBCardBody>

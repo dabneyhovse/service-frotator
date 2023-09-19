@@ -51,6 +51,7 @@ const init = {
     anagram: "",
     major: "",
     bio: "",
+    sort: 1,
   },
   selectedFroshIdx: 0,
 };
