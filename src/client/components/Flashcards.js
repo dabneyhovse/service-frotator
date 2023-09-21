@@ -6,9 +6,6 @@ import { Container, Button, ButtonGroup, Form } from "react-bootstrap";
 import { fetchFrosh } from "../store/frosh";
 
 export default function FlashCards() {
-  // probably dont use the search reducer, just use a
-  // state hook: useState(), since it is the only param
-  // of interest and should probably be seperate from the main search
   const { frosh } = useSelector((state) => ({
     frosh: state.frotator.frosh.cards.filter((f) => f.image !== null),
   }));
@@ -20,9 +17,6 @@ export default function FlashCards() {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    // cards are an extra modifier to the search that
-    // does not impact the actual frosh found in the query,
-    // so I had it seperate, this could be changed, as its a matter of style
     dispatch(fetchFrosh({ search, cards: true }));
   }, []);
 
