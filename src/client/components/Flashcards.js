@@ -10,7 +10,7 @@ export default function FlashCards() {
   // state hook: useState(), since it is the only param
   // of interest and should probably be seperate from the main search
   const { frosh } = useSelector((state) => ({
-    frosh: state.frotator.frosh.cards, //.filter((f) => f.image !== null),
+    frosh: state.frotator.frosh.cards.filter((f) => f.image !== null),
   }));
 
   const [search, setSearch] = useState({});
