@@ -1,27 +1,71 @@
 import React, { useEffect, useState } from "react";
 import cn from "classnames";
 import { useDispatch, useSelector } from "react-redux";
-import { Container, Button, ButtonGroup } from "react-bootstrap";
+import { Container, Button, ButtonGroup, Form } from "react-bootstrap";
 
-import { fetchFrosh } from "../store/frosh";
+import { fetchFrosh, setSearch } from "../store/frosh";
 
 export default function FlashCards() {
+  const { frosh, search } = useSelector((state) => ({
+    frosh: state.frotator.frosh.cards, //.filter((f) => f.image !== null),
+    search: state.frotator.frosh.search,
+  }));
+
   const [selectedFrosh, setSelectedFrosh] = useState(0);
   const [showBack, setShowBack] = useState(false);
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(fetchFrosh({ cards: true }));
+    dispatch(fetchFrosh({ ...search, cards: true }));
   }, []);
 
-  const { frosh } = useSelector((state) => ({
-    frosh: state.frotator.frosh.cards.filter((f) => f.image !== null),
-  }));
+  const onChange = (event) => {
+    event.preventDefault();
+    dispatch(
+      setSearch({
+        ...search,
+        cards: true,
+        [event.target.name]: event.target.value,
+      })
+    );
+    dispatch(
+      fetchFrosh({
+        ...search,
+        cards: true,
+        [event.target.name]: event.target.value,
+      })
+    );
+    setSelectedFrosh(0);
+    setShowBack(false);
+  };
+
+  console.log(frosh[0]);
 
   const handleClick = () => setShowBack(!showBack);
 
   return (
     <Container className="flash-card-container">
+      <Form>
+        <Form.Group>
+          <Form.Label>Dinner Group</Form.Label>
+          <Form.Select
+            onChange={onChange}
+            name="dinnerGroup"
+            value={search.dinnerGroup}
+          >
+            <option value="any">Any Dinner</option>
+            <option value="A">Dinner A</option>
+            <option value="B">Dinner B</option>
+            <option value="C">Dinner C</option>
+            <option value="D">Dinner D</option>
+            <option value="E">Dinner E</option>
+            <option value="F">Dinner F</option>
+            <option value="G">Dinner G</option>
+            <option value="H">Dinner H</option>
+          </Form.Select>
+        </Form.Group>
+      </Form>
+
       <Container className="flip-card-outer" onClick={handleClick}>
         <div
           className={cn("flip-card-inner", {
