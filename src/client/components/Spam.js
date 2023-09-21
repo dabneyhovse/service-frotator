@@ -38,7 +38,7 @@ function Spam() {
         id: Math.random(),
       })
     );
-    socket.emit("norman", {
+    socket.emit("spam", {
       text: newComment,
       from: { username: user.username },
       id: Math.random(),
@@ -47,7 +47,7 @@ function Spam() {
 
   return (
     <div className="mainContent">
-      <h1>Spam Norman</h1>
+      <h1>Spam Jen</h1>
       <MDBContainer className="py-5" style={{ maxWidth: "1000px" }}>
         <MDBRow className="justify-content-center">
           <MDBCol md="12" lg="10">
