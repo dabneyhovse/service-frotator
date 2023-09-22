@@ -6,6 +6,9 @@ import { Container, Button, ButtonGroup, Form } from "react-bootstrap";
 import { fetchFrosh, setSearch } from "../store/frosh";
 
 export default function FlashCards() {
+  // probably dont use the search reducer, just use a
+  // state hook: useState(), since it is the only param
+  // of interest and should probably be seperate from the main search
   const { frosh, search } = useSelector((state) => ({
     frosh: state.frotator.frosh.cards, //.filter((f) => f.image !== null),
     search: state.frotator.frosh.search,
@@ -16,30 +19,34 @@ export default function FlashCards() {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(fetchFrosh({ ...search, cards: true }));
+    // cards are an extra modifier to the search that
+    // does not impact the actual frosh found in the query,
+    // so I had it seperate, this could be changed, as its a matter of style
+    dispatch(fetchFrosh({ search, cards: true }));
   }, []);
 
   const onChange = (event) => {
     event.preventDefault();
+    // TODO replace with useState hook methods
     dispatch(
       setSearch({
         ...search,
         cards: true,
+        // dont use this layout unless your form has more than one possible
+        // input that could be changing, in this case only the dinner group can change,
+        // so you should set it by name
         [event.target.name]: event.target.value,
       })
     );
     dispatch(
       fetchFrosh({
-        ...search,
+        search: { dinnerGroup: event.target.value },
         cards: true,
-        [event.target.name]: event.target.value,
       })
     );
     setSelectedFrosh(0);
     setShowBack(false);
   };
-
-  console.log(frosh[0]);
 
   const handleClick = () => setShowBack(!showBack);
 
@@ -47,6 +54,8 @@ export default function FlashCards() {
     <Container className="flash-card-container">
       <Form>
         <Form.Group>
+          {/* probably put the form down with the next frosh / prev frosh.
+           Could be compacted by removing label so it fits inline with the buttons */}
           <Form.Label>Dinner Group</Form.Label>
           <Form.Select
             onChange={onChange}
