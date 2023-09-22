@@ -1,0 +1,4 @@
+p:empty:before {
+  content: ' ';
+  white-space: pre;
+}

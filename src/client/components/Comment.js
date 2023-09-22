@@ -11,6 +11,8 @@ import {
   MDBTypography,
 } from "mdb-react-ui-kit";
 
+import "./Comment.css";
+
 export default function Comment(props) {
   return (
     <>
@@ -31,7 +33,9 @@ export default function Comment(props) {
             <MDBTypography tag="h6" className="fw-bold mb-1">
               {props.comment.from.username}
             </MDBTypography>
-            <p className="mb-0">{props.comment.text}</p>
+            {props.comment.text.split("\n").map((line) => (
+              <p className="mb-0">{line}</p>
+            ))}
           </div>
         </div>
       </MDBCardBody>
