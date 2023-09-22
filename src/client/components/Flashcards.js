@@ -1,27 +1,102 @@
 import React, { useEffect, useState } from "react";
 import cn from "classnames";
 import { useDispatch, useSelector } from "react-redux";
-import { Container, Button, ButtonGroup } from "react-bootstrap";
+import { Container, Button, ButtonGroup, Form } from "react-bootstrap";
 
 import { fetchFrosh } from "../store/frosh";
 
 export default function FlashCards() {
+  const { frosh } = useSelector((state) => ({
+    frosh: state.frotator.frosh.cards.filter((f) => f.image !== null),
+  }));
+
+  const [search, setSearch] = useState({});
+
   const [selectedFrosh, setSelectedFrosh] = useState(0);
   const [showBack, setShowBack] = useState(false);
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(fetchFrosh({ cards: true }));
+    dispatch(fetchFrosh({ search, cards: true }));
   }, []);
 
-  const { frosh } = useSelector((state) => ({
-    frosh: state.frotator.frosh.cards.filter((f) => f.image !== null),
-  }));
+  const onChange = (event) => {
+    event.preventDefault();
+    setSearch({
+      cards: true,
+      dinnerGroup: event.target.value,
+    });
+    dispatch(
+      fetchFrosh({
+        search: { dinnerGroup: event.target.value },
+        cards: true,
+      })
+    );
+    setSelectedFrosh(0);
+    setShowBack(false);
+  };
+
+  const goToPreviousFrosh = () => {
+    setShowBack(false);
+    if (selectedFrosh == 0) {
+      setSelectedFrosh(frosh.length - 1);
+      return;
+    }
+    setSelectedFrosh(selectedFrosh - 1);
+  };
+
+  const goToNextFrosh = () => {
+    setShowBack(false);
+    if (selectedFrosh == frosh.length - 1) {
+      setSelectedFrosh(0);
+      return;
+    }
+    setSelectedFrosh(selectedFrosh + 1);
+  };
+
+  const keyHandler = (event) => {
+    // Left arrow
+    if (event.keyCode == 37) {
+      goToPreviousFrosh();
+    }
+    // Right arrow
+    else if (event.keyCode == 39) {
+      goToNextFrosh();
+    }
+    // Up or down arrow
+    else if (event.keyCode == 38 || event.keyCode == 40) {
+      setShowBack(!showBack);
+    }
+  };
 
   const handleClick = () => setShowBack(!showBack);
 
   return (
-    <Container className="flash-card-container">
+    <Container
+      autoFocus
+      className="flash-card-container"
+      onKeyDown={(e) => keyHandler(e)}
+    >
+      <Form>
+        <Form.Group>
+          <Form.Select
+            onChange={onChange}
+            name="dinnerGroup"
+            value={search.dinnerGroup}
+          >
+            <option value="any">Any Dinner</option>
+            <option value="A">Dinner A</option>
+            <option value="B">Dinner B</option>
+            <option value="C">Dinner C</option>
+            <option value="D">Dinner D</option>
+            <option value="E">Dinner E</option>
+            <option value="F">Dinner F</option>
+            <option value="G">Dinner G</option>
+            <option value="H">Dinner H</option>
+          </Form.Select>
+        </Form.Group>
+      </Form>
+
       <Container className="flip-card-outer" onClick={handleClick}>
         <div
           className={cn("flip-card-inner", {
@@ -65,30 +140,8 @@ export default function FlashCards() {
       </Container>
 
       <ButtonGroup>
-        <Button
-          onClick={() => {
-            setShowBack(false);
-            if (selectedFrosh == 0) {
-              setSelectedFrosh(frosh.length - 1);
-              return;
-            }
-            setSelectedFrosh(selectedFrosh - 1);
-          }}
-        >
-          Previous Frosh
-        </Button>
-        <Button
-          onClick={() => {
-            setShowBack(false);
-            if (selectedFrosh == frosh.length - 1) {
-              setSelectedFrosh(0);
-              return;
-            }
-            setSelectedFrosh(selectedFrosh + 1);
-          }}
-        >
-          Next Frosh
-        </Button>
+        <Button onClick={goToPreviousFrosh}>Previous Frosh</Button>
+        <Button onClick={goToNextFrosh}>Next Frosh</Button>
       </ButtonGroup>
     </Container>
   );
