@@ -37,10 +37,14 @@ comptrollers only need to turn the service on via the admin panel
 
 ### SETUP CHECKLIST
 
+- [ ] Harass excomm for frosh information
+- [ ] Double check fullnames vs preferred names (admin is bad with this)
 - [ ] Upload Frosh data via admin panel.
 
 
 ## GUIDE TO THE CODEBASE
+
+Good luck lol
 
 ## CREDITS AND HISTORY
 
@@ -50,7 +54,7 @@ the second version (a.k.a. Froshulorg) in Ruby on Rails in 2014. But nobody
 except Andrew Zhao knew how to work with Ruby on Rails, so Tim Maxwell ported it
 to Python in 2015. It is unclear what happened next, but eventually Nicholas
 Currault made a bunch of improvements 2018--2019 (including starting this Git
-repo), which led to the current version. In 2020 the Covid-19 pandemic hit,
+repo), which led to the "current" version. In 2020 the Covid-19 pandemic hit,
 delaying Rotation to the winter and forcing it onto the virtual medium. Thus,
 Noah Ortiz made in 2021 some minor changes to accommodate the virtual Rotation,
 updated the image scraper to work with a new version of Donut, and began to
