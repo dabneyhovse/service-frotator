@@ -1,6 +1,6 @@
 const { Op, Sequelize } = require("sequelize");
 const { Frosh, Comment } = require("../db/models");
-const { isLoggedIn, isAdmin, upload } = require("./middleware");
+const { isLoggedIn, isAdmin, upload } = require("module-middleware");
 const { parse } = require("csv-parse");
 const fs = require("fs");
 const { Duplex } = require("stream"); // Native Node Module
@@ -65,7 +65,7 @@ const paginate = (page) => {
  *        event:        event the frosh is attending (event id from the events model)
  *        dinnerGroup:  the dinner group the frosh is in
  *        ...
- * 
+ *
  *    pageNum:          the page we want to view, cut the rest of the query off
  *    cards:            if this query is for the flashcard functionality,
  *                      just stops it from being paginated so all the frosh are there

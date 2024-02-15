@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const fs = require("fs");
-const { isAdmin } = require("./middleware");
+const { isAdmin } = require("module-middleware");
 const FILE_NAME = "../../../frotator.config.json";
 module.exports = router;
 

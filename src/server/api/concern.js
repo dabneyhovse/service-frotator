@@ -1,6 +1,6 @@
 const { Comment } = require("../db/models");
 const Concern = require("../db/models/concern");
-const { isAdmin, isLoggedIn } = require("./middleware");
+const { isAdmin, isLoggedIn } = require("module-middleware");
 
 const router = require("express").Router();
 module.exports = router;

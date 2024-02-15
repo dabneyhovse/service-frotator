@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const path = require("path");
-const { isLoggedIn } = require("./middleware");
+const { isLoggedIn } = require("module-middleware");
 module.exports = router;
 
 // serves the frosh images that were scraped from donut

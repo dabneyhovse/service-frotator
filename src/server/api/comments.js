@@ -1,6 +1,6 @@
 const { Axios } = require("axios");
 const { Comment } = require("../db/models");
-const { isAdmin, isLoggedIn } = require("./middleware");
+const { isAdmin, isLoggedIn } = require("module-middleware");
 
 const router = require("express").Router();
 module.exports = router;
