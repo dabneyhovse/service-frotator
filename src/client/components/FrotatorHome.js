@@ -97,7 +97,7 @@ export default function FrotatorHome() {
             <div className="m-2 ">
               <h5>Spam</h5>
               <p>
-                Want to spam Jen during meetings? You're in luck, frotator
+                Want to spam Alanna during meetings? You're in luck, frotator
                 has a new feature!!!
               </p>
             </div>

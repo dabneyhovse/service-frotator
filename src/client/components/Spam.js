@@ -47,7 +47,7 @@ function Spam() {
 
   return (
     <div className="mainContent">
-      <h1>Spam Jen</h1>
+      <h1>Spam Alanna</h1>
       <MDBContainer className="py-5" style={{ maxWidth: "1000px" }}>
         <MDBRow className="justify-content-center">
           <MDBCol md="12" lg="10">
