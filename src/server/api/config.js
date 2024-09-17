@@ -1,6 +1,6 @@
 const router = require("express").Router();
+const { claimIncludes } = require("express-openid-connect");
 const fs = require("fs");
-const { isAdmin } = require("./middleware");
 const FILE_NAME = "../../../frotator.config.json";
 module.exports = router;
 
@@ -15,7 +15,7 @@ module.exports = router;
  *  file for froshulator, so admins can turn access to it on and
  *  off, etc
  */
-router.put("/", isAdmin, (req, res, next) => {
+router.put("/", claimIncludes('backbone_roles', 'backbone-admin'), (req, res, next) => {
   try {
     const oldSettings = require(FILE_NAME);
     const oldKeys = Object.keys(oldSettings);

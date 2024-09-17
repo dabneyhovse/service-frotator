@@ -1,12 +1,13 @@
 const { Op, Sequelize } = require("sequelize");
 const { Frosh, Comment } = require("../db/models");
-const { isLoggedIn, isAdmin, upload } = require("./middleware");
+const { upload } = require("./middleware");
 const { parse } = require("csv-parse");
 const fs = require("fs");
 const { Duplex } = require("stream"); // Native Node Module
 const Axios = require("axios");
 const Vote = require("../db/models/vote");
 const { Readable } = require("stream");
+const { claimIncludes } = require("express-openid-connect");
 
 const router = require("express").Router();
 
@@ -95,7 +96,7 @@ const SORT_OPTIONS = {
   ],
 };
 
-router.get("/", isLoggedIn, async (req, res, next) => {
+router.get("/", claimIncludes('backbone_roles', 'frotator-access'), async (req, res, next) => {
   try {
     const search = req.query.search ? JSON.parse(req.query.search) : {};
     /**
@@ -287,7 +288,7 @@ router.get("/", isLoggedIn, async (req, res, next) => {
  * returns a json list of the ranked frosh
  *
  */
-router.get("/ranking", isAdmin, async (req, res, next) => {
+router.get("/ranking", claimIncludes('backbone_roles', 'frotator-access', 'frotator-bigbad'), async (req, res, next) => {
   try {
     const frosh = await Frosh.findAll({
       where: {
@@ -316,7 +317,7 @@ router.get("/ranking", isAdmin, async (req, res, next) => {
   }
 });
 
-router.put("/ranking", isAdmin, async (req, res, next) => {
+router.put("/ranking", claimIncludes('backbone_roles', 'frotator-access', 'frotator-bigbad'), async (req, res, next) => {
   try {
     const froshId = req.body.froshId;
     const rank = req.body.rank;
@@ -419,7 +420,7 @@ router.put("/ranking", isAdmin, async (req, res, next) => {
  *    froshId: id of the frosh to be requested
  *
  */
-router.get("/:froshId", isLoggedIn, async (req, res, next) => {
+router.get("/:froshId", claimIncludes('backbone_roles', 'frotator-access'), async (req, res, next) => {
   try {
     const frosh = await Frosh.findByPk(req.params.froshId, {
       attributes: [
@@ -507,7 +508,7 @@ const updateable = [
 
 router.post(
   "/",
-  isLoggedIn,
+  claimIncludes('backbone_roles', 'backbone-admin'),
   upload.single("csv-file"),
   async (req, res, next) => {
     try {
@@ -563,7 +564,7 @@ router.post(
   }
 );
 
-router.post("/favorite", async (req, res, next) => {
+router.post("/favorite", claimIncludes('backbone_roles', 'frotator-access'), async (req, res, next) => {
   try {
     if (req.body.favorite) {
       await Vote.findOrCreate({
@@ -585,7 +586,7 @@ router.post("/favorite", async (req, res, next) => {
   }
 });
 
-router.put("/", isAdmin, upload.single("csv-file"), async (req, res, next) => {
+router.put("/", claimIncludes('backbone_roles', 'backbone-admin'), upload.single("csv-file"), async (req, res, next) => {
   try {
     const myReadableStream = bufferToStream(req.file.buffer);
 
@@ -716,7 +717,7 @@ router.put("/", isAdmin, upload.single("csv-file"), async (req, res, next) => {
   }
 });
 
-router.delete("/", isAdmin, async (req, res, next) => {
+router.delete("/", claimIncludes('backbone_roles', 'backbone-admin'), async (req, res, next) => {
   try {
     await Frosh.truncate({ cascade: true });
     res.sendStatus(200);

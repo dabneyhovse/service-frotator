@@ -1,6 +1,6 @@
 const { Axios } = require("axios");
 const { Comment } = require("../db/models");
-const { isAdmin, isLoggedIn } = require("./middleware");
+const { claimIncludes } = require("express-openid-connect");
 
 const router = require("express").Router();
 module.exports = router;
@@ -15,7 +15,7 @@ module.exports = router;
  * req.params.froshId
  *  the id of the frosh
  */
-router.get("/frosh/:froshId", isLoggedIn, async (req, res, next) => {
+router.get("/frosh/:froshId", claimIncludes('backbone_roles', 'frotator-access'), async (req, res, next) => {
   try {
     const comments = Comment.findAll({
       where: { froshId: req.params.froshId },
@@ -28,7 +28,7 @@ router.get("/frosh/:froshId", isLoggedIn, async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+});  
 
 /**
  * This will be mounted at the following route:
@@ -40,7 +40,7 @@ router.get("/frosh/:froshId", isLoggedIn, async (req, res, next) => {
  * req.params.froshId
  *  the id of the comment
  */
-router.get("/:commentId", isLoggedIn, async (req, res, next) => {
+router.get("/:commentId", router, async (req, res, next) => {
   try {
     const comment = await Comment.findByPk(req.params.commentId);
     res.json(comment);
@@ -59,7 +59,7 @@ router.get("/:commentId", isLoggedIn, async (req, res, next) => {
  * req.params.froshId
  *  the id of the comment
  */
-router.delete("/:commentId", isAdmin, async (req, res, next) => {
+router.delete("/:commentId", claimIncludes('backbone_roles', 'backbone-admin'), async (req, res, next) => {
   try {
     const comment = await Comment.findByPk(req.params.commentId);
     await comment.destroy();
@@ -81,7 +81,7 @@ router.delete("/:commentId", isAdmin, async (req, res, next) => {
  */
 
 const EDITABLE_FIELDS = [""];
-router.put("/:commentId", async (req, res, next) => {
+router.put("/:commentId", claimIncludes('backbone_roles', 'frotator-access'), async (req, res, next) => {
   try {
     const changes = req.body.changes;
     const comment = await Comment.findByPk(req.params.commentId);
@@ -109,7 +109,7 @@ router.put("/:commentId", async (req, res, next) => {
  * req.params.commentId
  *  the id of the comment
  */
-router.post("/", async (req, res, next) => {
+router.post("/", claimIncludes('backbone_roles', 'frotator-access'), async (req, res, next) => {
   try {
     const comment = await Comment.create({
       text: req.body.text,
