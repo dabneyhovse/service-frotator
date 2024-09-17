@@ -14,12 +14,12 @@ import FroshList from "./FroshList";
 import { fetchFrosh, froshListSetPage, setSearch } from "../store/frosh";
 
 export default function FroshListMain(props) {
-  const { frosh, page, count, search, user } = useSelector((state) => ({
+  const { frosh, page, count, search, userClaims } = useSelector((state) => ({
     frosh: state.frotator.frosh.list,
     count: state.frotator.frosh.count,
     page: state.frotator.frosh.page,
     search: state.frotator.frosh.search,
-    user: state.user.data,
+    userClaims: state.userInfo.backbone_roles,
   }));
 
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -112,7 +112,7 @@ export default function FroshListMain(props) {
               <Form.Select onChange={onChange} name="sort" value={search.sort}>
                 <option value="0">Default</option>
                 <option value="1">Alphabetical</option>
-                {user.authLevel >= 4 ? (
+                {userClaims.includes("frotator-adv-sort") ? (
                   <>
                     <option value="2">Most Comments</option>
                     <option value="3">Least Comments</option>
@@ -239,7 +239,7 @@ export default function FroshListMain(props) {
                   value={search.sort}
                 >
                   <option value="1">Alphabetical</option>
-                  {user.authLevel >= 4 ? (
+                  {userClaims.includes("frotator-adv-sort") >= 4 ? (
                     <>
                       <option value="2">Most Comments</option>
                       <option value="3">Least Comments</option>
