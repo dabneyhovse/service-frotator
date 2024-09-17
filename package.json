@@ -4,15 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "python-config":"cd src/script && python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install --quiet -r requirements.txt && cd ..",
-    "scrape":"cd src/script && source .venv/bin/activate && python3 scrape.py && cd ../.."
+    "python-config": "cd src/script && python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install --quiet -r requirements.txt && cd ..",
+    "scrape": "cd src/script && source .venv/bin/activate && python3 scrape.py && cd ../.."
   },
   "author": "njasi",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.27.2",
+    "axios": "^0.28.1",
     "csv-parse": "^5.3.0",
     "express": "^4.18.1",
+    "express-openid-connect": "^2.17.1",
     "mdb-react-ui-kit": "^4.2.0",
     "multer": "^1.4.5-lts.1",
     "pg": "^8.8.0",
