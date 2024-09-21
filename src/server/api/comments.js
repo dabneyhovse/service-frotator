@@ -1,6 +1,7 @@
-const { Axios } = require("axios");
+const Axios = require("axios").default;
 const { Comment } = require("../db/models");
 const { claimIncludes } = require("express-openid-connect");
+const { keycloakAPI } = require("module-keycloak");
 
 const router = require("express").Router();
 module.exports = router;
@@ -21,9 +22,28 @@ router.get("/frosh/:froshId", claimIncludes('backbone_roles', 'frotator-access')
       where: { froshId: req.params.froshId },
       include: [{ model: Comment }],
     });
+    const keycloakBaseURL = process.env.KC_API_URL;
+    const keycloakClientID = process.env.CLIENT_ID;
+    // let token = await keycloakAPI.grant({
+    //   grant_type: 'client_credentials',
+    //   client_id: keycloakClientID,
+    // });
+    let token = "lol lmao even";
     for (let i = 0; i < comments.length; i++) {
-      const res = await Axios.get(`/api/users/${comments[i].userId}`);
-      comments[i].dataValues.from = res.data;
+      const res = await keycloakAPI.requestResource(`${keycloakBaseURL}/users/${comments[i].userId}`, token);
+      if (res.statusCode === 401) {
+        token = await keycloakAPI.grant({
+          grant_type: 'client_credentials',
+          client_id: keycloakClientID,
+        })
+        res = await keycloakAPI.requestResource(`${keycloakBaseURL}/users/${comments[i].userId}`, token);
+      }
+      else if (res.statusCode < 200 || res.statusCode >= 400) {
+        throw new Error(`Failed to fetch comment data`);
+      }
+      const { name , username, picture } = res.data;
+      const userData = { name: name, username: username, picture: picture };
+      comments[i].dataValues.from = userData;
     }
   } catch (error) {
     next(error);
@@ -124,7 +144,7 @@ router.post("/", claimIncludes('backbone_roles', 'frotator-access'), async (req,
         username: "amogus",
       };
     } else {
-      comment.dataValues.from = req.user;
+      comment.dataValues.from = await req.oidc.fetchUserInfo();
     }
 
     res.json(comment);
