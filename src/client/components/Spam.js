@@ -16,9 +16,9 @@ import {
 import { frotatorAddSpam } from "../store/spam";
 
 function Spam() {
-  const { spam, user } = useSelector((state) => ({
+  const { spam, userInfo } = useSelector((state) => ({
     spam: state.frotator.spam,
-    user: state.user.data,
+    userInfo: state.userInfo,
   }));
 
   const dispatch = useDispatch();
@@ -34,13 +34,13 @@ function Spam() {
     dispatch(
       frotatorAddSpam({
         text: newComment,
-        from: { username: user.username },
+        from: { username: userInfo.preferred_username },
         id: Math.random(),
       })
     );
     socket.emit("spam", {
       text: newComment,
-      from: { username: user.username },
+      from: { username: userInfo.preferred_username },
       id: Math.random(),
     });
   };

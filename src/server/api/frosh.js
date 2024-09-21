@@ -260,7 +260,7 @@ router.get("/", claimIncludes('backbone_roles', 'frotator-access'), async (req, 
     const frosh = await Frosh.findAndCountAll(query);
 
     if (search.only_my_favorites) {
-      const favorite_frosh_votes = await Vote.findAll({where : {userId : req.user.id}});
+      const favorite_frosh_votes = await Vote.findAll({where : {userId : req.oidc.user.sub}});
       const favorite_frosh_ids = [...favorite_frosh_votes].map((v) => v.dataValues.frotatorFroshId);
       frosh.rows = frosh.rows.filter((f) => favorite_frosh_ids.includes(f.id));
     }
@@ -442,6 +442,14 @@ router.get("/:froshId", claimIncludes('backbone_roles', 'frotator-access'), asyn
     }
     frosh.dataValues.displayName = frosh.safeName();
 
+    const keycloakBaseURL = process.env.KC_API_URL;
+    const keycloakClientID = process.env.CLIENT_ID;
+    // let token = await keycloakAPI.grant({
+    //   grant_type: 'client_credentials',
+    //   client_id: keycloakClientID,
+    // });
+    let token = "lol lmao even";
+
     for (let i = 0; i < frosh["frotator-comments"].length; i++) {
       let from;
       if (frosh["frotator-comments"][i].anon) {
@@ -450,16 +458,25 @@ router.get("/:froshId", claimIncludes('backbone_roles', 'frotator-access'), asyn
           username: "amogus",
         };
       } else {
-        const res = await Axios.get(
-          `http://localhost:8080/api/users/${frosh["frotator-comments"][i].userId}`,
-          { params: { local: process.env.LOCAL } }
-        );
-        from = res.data;
+        const res = await keycloakAPI.requestResource(`${keycloakBaseURL}/users/${comments[i].userId}`, token);
+        if (res.statusCode === 401) {
+          token = await keycloakAPI.grant({
+            grant_type: 'client_credentials',
+            client_id: keycloakClientID,
+          })
+          res = await keycloakAPI.requestResource(`${keycloakBaseURL}/users/${frosh["frotator-comments"][i].userId}`, token);
+        }
+        else if (res.statusCode < 200 || res.statusCode >= 400) {
+          throw new Error(`Failed to fetch comment data`);
+        }
+        const { name , username, picture } = res.data;
+        const userData = { name: name, username: username, picture: picture };
+        from = userData;
       }
       frosh["frotator-comments"][i].dataValues.from = from;
     }
     const vote = await Vote.findOne({
-      where: { userId: req.user.id, frotatorFroshId: req.params.froshId },
+      where: { userId: req.oidc.user.sub, frotatorFroshId: req.params.froshId },
     });
     if (vote) {
       frosh.dataValues.favorite = true;
@@ -569,14 +586,14 @@ router.post("/favorite", claimIncludes('backbone_roles', 'frotator-access'), asy
     if (req.body.favorite) {
       await Vote.findOrCreate({
         where: {
-          userId: req.user.id,
+          userId: req.oidc.user.sub,
           frotatorFroshId: req.body.froshId,
           approve: true,
         },
       });
     } else {
       const vote = await Vote.findOne({
-        where: { userId: req.user.id, frotatorFroshId: req.body.froshId },
+        where: { userId: req.oidc.user.sub, frotatorFroshId: req.body.froshId },
       });
       await vote.destroy();
     }
