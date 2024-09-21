@@ -23,7 +23,7 @@ export default function Comment(props) {
           ) : (
             <MDBCardImage
               className="rounded-circle shadow-1-strong me-3"
-              src={props.comment.from.profile.photo}
+              src={props.comment.from.picture}
               alt="avatar"
               width="60"
               height="60"
@@ -31,7 +31,7 @@ export default function Comment(props) {
           )}
           <div>
             <MDBTypography tag="h6" className="fw-bold mb-1">
-              {props.comment.from.username}
+              {props.comment.from.name}
             </MDBTypography>
             {props.comment.text.split("\n").map((line) => (
               <p className="mb-0">{line}</p>
