@@ -25,7 +25,7 @@ export default function Ranking(props) {
       count: state.frotator.frosh.count,
       page: state.frotator.frosh.page,
       search: state.frotator.frosh.search,
-      userClaims: state.userInfo.backbone_roles,
+      userClaims: state.user.backbone_roles,
       rankingList: state.frotator.ranking.list,
     })
   );
