@@ -144,7 +144,7 @@ router.post("/", claimIncludes('backbone_roles', 'frotator-access'), async (req,
         username: "amogus",
       };
     } else {
-      comment.dataValues.from = await req.oidc.fetchUserInfo();
+      comment.dataValues.from = await req.oidc.user;
     }
 
     res.json(comment);
