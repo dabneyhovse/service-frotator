@@ -18,7 +18,7 @@ import { frotatorAddSpam } from "../store/spam";
 function Spam() {
   const { spam, userInfo } = useSelector((state) => ({
     spam: state.frotator.spam,
-    userInfo: state.user,
+    userInfo: state.user.data,
   }));
 
   const dispatch = useDispatch();

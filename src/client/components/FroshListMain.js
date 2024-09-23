@@ -19,7 +19,7 @@ export default function FroshListMain(props) {
     count: state.frotator.frosh.count,
     page: state.frotator.frosh.page,
     search: state.frotator.frosh.search,
-    userClaims: state.user.backbone_roles,
+    userClaims: state.user.data.backbone_roles,
   }));
 
   const [showAdvanced, setShowAdvanced] = useState(false);

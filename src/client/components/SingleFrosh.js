@@ -47,7 +47,7 @@ export default function SingleFrosh() {
   const { frosh, userInfo, selectedFroshIdx, allFrosh } = useSelector((state) => ({
     frosh: state.frotator.singleFrosh.frosh,
     allFrosh: state.frotator.frosh.list,
-    userInfo: state.user,
+    userInfo: state.user.data,
     selectedFroshIdx: state.frotator.frosh.selectedFroshIdx,
   }));
 
