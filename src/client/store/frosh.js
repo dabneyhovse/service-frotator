@@ -2,6 +2,24 @@ import Axios from "axios";
 import { toast } from "react-toastify";
 import { SERVICE_FROTATOR_GOT_SINGLE_FROSH } from "./singleFrosh";
 
+/**
+ * Creates a URL-encoded query string from a given set of parameters
+ * Custom serializer needed to restore old behavior after breaking change
+ * in Axios 0.28
+ * @param {Object} params The parameters to encode into a query string
+ * @returns {string} The URL-encoded query string
+ */
+function createQueryString(params) {
+  return Object.keys(params).reduce((x, key) => {
+      const value = params[key];
+      if (typeof value === 'object' && value !== null && !(value instanceof Date)) {
+          return x + `${x.length ? '&' : ''}${encodeURIComponent(key)}=${encodeURIComponent(JSON.stringify(value))}`;
+      } else {
+          return x + `${x.length ? '&' : ''}${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+      }
+  }, '');
+}
+
 // Action Types
 export const SERVICE_FROTATOR_GOT_FROSH = "SERVICE_FROTATOR_GOT_FROSH";
 export const SERVICE_FROTATOR_GOT_FROSH_CARDS =
@@ -27,7 +45,7 @@ export const setSearch = (search) => {
 // Thunks, async functions basically
 export const fetchFrosh = (search) => async (dispatch) => {
   try {
-    const res = await Axios.get("/api/frotator/frosh", { params: search });
+    const res = await Axios.get("/api/frotator/frosh", { params: search, paramsSerializer: { serialize: createQueryString } });
     if (search.cards) {
       dispatch(gotFroshCards(res.data.rows));
       return;

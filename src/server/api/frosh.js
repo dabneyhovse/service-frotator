@@ -8,7 +8,7 @@ const Axios = require("axios");
 const Vote = require("../db/models/vote");
 const { Readable } = require("stream");
 const { claimIncludes } = require("express-openid-connect");
-const keycloakAPI = import('module-keycloak').default;
+const { default: keycloakAPI } = import('module-keycloak');
 
 const router = require("express").Router();
 
