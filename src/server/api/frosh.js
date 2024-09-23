@@ -42,24 +42,6 @@ function googleDriveImageToSRC(imageURL) {
   return `https://drive.google.com/uc?export=view&id=${imageId}`;
 }
 
-/**
- * Creates a URL-encoded query string from a given set of parameters
- * Custom stringifier needed to restore old behavior after breaking change
- * in Axios 0.28
- * @param {Object} params The parameters to encode into a query string
- * @returns {string} The URL-encoded query string
- */
-function createQueryString(params: any): string {
-  return Object.keys(params).reduce((x, key) => {
-      const value = params[key];
-      if (typeof value === 'object' && value !== null && !(value instanceof Date)) {
-          return x + `${x.length ? '&' : ''}${encodeURIComponent(key)}=${encodeURIComponent(JSON.stringify(value))}`;
-      } else {
-          return x + `${x.length ? '&' : ''}${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
-      }
-  }, '');
-}
-
 const USERS_PER_PAGE = 20;
 const paginate = (page) => {
   const offset = (page - 1) * USERS_PER_PAGE;
