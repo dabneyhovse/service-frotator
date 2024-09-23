@@ -1,7 +1,7 @@
 const Axios = require("axios").default;
 const { Comment } = require("../db/models");
 const { claimIncludes } = require("express-openid-connect");
-const { default: keycloakAPI } = await import("module-keycloak");
+const { default: keycloakAPI } = import("module-keycloak");
 
 const router = require("express").Router();
 module.exports = router;
