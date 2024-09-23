@@ -6,7 +6,7 @@ const Comment = db.define("frotator-comment", {
    * userId of the user from the backbone database
    */
   userId: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.STRING,
   },
 
   /**

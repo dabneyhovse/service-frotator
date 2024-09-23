@@ -6,7 +6,7 @@ const Concern = db.define("frotator-concern", {
    * userId of the user from the backbone database
    */
   userId: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.STRING,
   },
 
   anon: {
