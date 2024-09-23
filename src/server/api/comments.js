@@ -140,8 +140,8 @@ router.post("/", claimIncludes('backbone_roles', 'frotator-access'), async (req,
     });
     if (comment.anon) {
       comment.dataValues.from = {
-        profile: { photo: "/resources/images/defaultProfile.png" },
-        username: "amogus",
+        picture: "/resources/images/defaultProfile.png",
+        preferred_username: "amogus",
       };
     } else {
       comment.dataValues.from = await req.oidc.user;

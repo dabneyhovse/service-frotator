@@ -62,7 +62,7 @@ function Spam() {
                 <div className="d-flex flex-start w-100">
                   <MDBCardImage
                     className="rounded-circle shadow-1-strong me-3"
-                    src={user.profile.photo}
+                    src={userInfo.picture}
                     alt="avatar"
                     width="40"
                     height="40"
