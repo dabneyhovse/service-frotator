@@ -1,7 +1,7 @@
 const Axios = require("axios").default;
 const { Comment } = require("../db/models");
 const { claimIncludes } = require("express-openid-connect");
-const { default: keycloakAPI } = import("module-keycloak");
+const keycloakModule  = (async () => (await import('module-keycloak')).default)();
 
 const router = require("express").Router();
 module.exports = router;
@@ -29,12 +29,14 @@ router.get("/frosh/:froshId", claimIncludes('backbone_roles', 'frotator-access')
     //   client_id: keycloakClientID,
     // });
     let token = "lol lmao even";
+    const keycloakAPI = await keycloakModule();
     for (let i = 0; i < comments.length; i++) {
       const res = await keycloakAPI.requestResource(`${keycloakBaseURL}/users/${comments[i].userId}`, token);
       if (res.statusCode === 401) {
         token = await keycloakAPI.grant({
           grant_type: 'client_credentials',
           client_id: keycloakClientID,
+          scope: 'openid admin-api',
         })
         res = await keycloakAPI.requestResource(`${keycloakBaseURL}/users/${comments[i].userId}`, token);
       }

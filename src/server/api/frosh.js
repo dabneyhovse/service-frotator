@@ -8,8 +8,7 @@ const Axios = require("axios");
 const Vote = require("../db/models/vote");
 const { Readable } = require("stream");
 const { claimIncludes } = require("express-openid-connect");
-const { default: keycloakAPI } = import('module-keycloak');
-
+const keycloakModule  = (async () => (await import('module-keycloak')).default)();
 const router = require("express").Router();
 
 module.exports = router;
@@ -442,7 +441,7 @@ router.get("/:froshId", claimIncludes('backbone_roles', 'frotator-access'), asyn
       return;
     }
     frosh.dataValues.displayName = frosh.safeName();
-
+    const keycloakAPI = await keycloakModule;
     const keycloakBaseURL = process.env.KC_API_URL;
     const keycloakClientID = process.env.CLIENT_ID;
     // let token = await keycloakAPI.grant({
@@ -455,23 +454,26 @@ router.get("/:froshId", claimIncludes('backbone_roles', 'frotator-access'), asyn
       let from;
       if (frosh["frotator-comments"][i].anon) {
         from = {
-          profile: { photo: "/resources/images/defaultProfile.png" },
+          picture: "/resources/images/defaultProfile.png",
+          name: "amogus",
           username: "amogus",
         };
       } else {
-        const res = await keycloakAPI.requestResource(`${keycloakBaseURL}/users/${comments[i].userId}`, token);
+        let res = await keycloakAPI.requestResource(`${keycloakBaseURL}/users/${frosh["frotator-comments"][i].userId}`, token);
         if (res.statusCode === 401) {
           token = await keycloakAPI.grant({
             grant_type: 'client_credentials',
             client_id: keycloakClientID,
+            scope: 'openid admin-api',
           })
           res = await keycloakAPI.requestResource(`${keycloakBaseURL}/users/${frosh["frotator-comments"][i].userId}`, token);
         }
         else if (res.statusCode < 200 || res.statusCode >= 400) {
           throw new Error(`Failed to fetch comment data`);
         }
-        const { name , username, picture } = res.data;
-        const userData = { name: name, username: username, picture: picture };
+        const { firstName, lastName, username, picture } = JSON.parse(res.body.toString('utf8'));
+        const name = `${firstName} ${lastName}`;
+        const userData = { name: name, username: username, picture: picture || "/resources/images/defaultProfile.png" };
         from = userData;
       }
       frosh["frotator-comments"][i].dataValues.from = from;

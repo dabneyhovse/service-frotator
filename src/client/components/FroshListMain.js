@@ -239,7 +239,7 @@ export default function FroshListMain(props) {
                   value={search.sort}
                 >
                   <option value="1">Alphabetical</option>
-                  {userClaims.includes("frotator-adv-sort") >= 4 ? (
+                  {userClaims.includes("frotator-adv-sort") ? (
                     <>
                       <option value="2">Most Comments</option>
                       <option value="3">Least Comments</option>

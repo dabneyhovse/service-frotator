@@ -291,7 +291,7 @@ export default function SingleFrosh() {
                           <div className="d-flex flex-start w-100">
                             <MDBCardImage
                               className="rounded-circle shadow-1-strong me-3"
-                              src={userInfo.picture}
+                              src={userInfo.picture || "/resources/images/defaultProfile.png"}
                               alt="avatar"
                               width="40"
                               height="40"
