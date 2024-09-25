@@ -471,7 +471,7 @@ router.get("/:froshId", claimIncludes('backbone_roles', 'frotator-access'), asyn
         else if (res.statusCode < 200 || res.statusCode >= 400) {
           throw new Error(`Failed to fetch comment data`);
         }
-        const { firstName, lastName, username, picture } = JSON.parse(res.body.toString('utf8'));
+        const { firstName, lastName, username, attributes: { picture } } = JSON.parse(res.body.toString('utf8'));
         const name = `${firstName} ${lastName}`;
         const userData = { name: name, username: username, picture: picture || "/resources/images/defaultProfile.png" };
         from = userData;
