@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import cn from "classnames";
 import { useDispatch, useSelector } from "react-redux";
-import { Container, Button, ButtonGroup, Form } from "react-bootstrap";
+import { Container, Button, ButtonGroup, Form, ButtonToolbar, InputGroup } from "react-bootstrap";
 
 import { fetchFrosh } from "../store/frosh";
 
@@ -10,31 +10,42 @@ export default function FlashCards() {
     frosh: state.frotator.frosh.cards.filter((f) => f.image !== null),
   }));
 
-  const [search, setSearch] = useState({});
+  const [search, setSearch] = useState({ sort: "6" });
 
   const [selectedFrosh, setSelectedFrosh] = useState(0);
   const [showBack, setShowBack] = useState(false);
 
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(fetchFrosh({ search, cards: true }));
+    dispatch(fetchFrosh({ search, cards: true}));
   }, []);
 
   const onChange = (event) => {
     event.preventDefault();
     setSearch({
-      cards: true,
       dinnerGroup: event.target.value,
+      sort: "6",
     });
     dispatch(
       fetchFrosh({
-        search: { dinnerGroup: event.target.value },
+        search: search,
         cards: true,
       })
     );
     setSelectedFrosh(0);
     setShowBack(false);
   };
+
+  const reshuffle = (event) => {
+    dispatch(
+      fetchFrosh({
+        search: search,
+        cards: true,
+      })
+    );
+    setSelectedFrosh(0);
+    setShowBack(false);
+  }
 
   const goToPreviousFrosh = () => {
     setShowBack(false);
@@ -77,8 +88,8 @@ export default function FlashCards() {
       className="flash-card-container"
       onKeyDown={(e) => keyHandler(e)}
     >
-      <Form>
-        <Form.Group>
+      <ButtonToolbar>
+        <InputGroup>
           <Form.Select
             onChange={onChange}
             name="dinnerGroup"
@@ -94,8 +105,9 @@ export default function FlashCards() {
             <option value="G">Dinner G</option>
             <option value="H">Dinner H</option>
           </Form.Select>
-        </Form.Group>
-      </Form>
+          <Button variant="warning" onClick={reshuffle}>Reshuffle</Button>
+        </InputGroup>
+      </ButtonToolbar>
 
       <Container className="flip-card-outer" onClick={handleClick}>
         <div

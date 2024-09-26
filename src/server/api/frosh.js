@@ -1,4 +1,5 @@
 const { Op, Sequelize } = require("sequelize");
+const db = require("../db");
 const { Frosh, Comment } = require("../db/models");
 const { upload } = require("./middleware");
 const { parse } = require("csv-parse");
@@ -94,6 +95,7 @@ const SORT_OPTIONS = {
     [Sequelize.col("favoritesCount"), "ASC"],
     ["id", "ASC"],
   ],
+  6: db.random()
 };
 
 router.get("/", claimIncludes('backbone_roles', 'frotator-access'), async (req, res, next) => {
