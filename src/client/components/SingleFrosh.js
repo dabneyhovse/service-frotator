@@ -44,10 +44,10 @@ export default function SingleFrosh() {
     text: "",
   });
 
-  const { frosh, user, selectedFroshIdx, allFrosh } = useSelector((state) => ({
+  const { frosh, userInfo, selectedFroshIdx, allFrosh } = useSelector((state) => ({
     frosh: state.frotator.singleFrosh.frosh,
     allFrosh: state.frotator.frosh.list,
-    user: state.user.data,
+    userInfo: state.user.data,
     selectedFroshIdx: state.frotator.frosh.selectedFroshIdx,
   }));
 
@@ -87,7 +87,7 @@ export default function SingleFrosh() {
       postNewComment({
         ...newComment,
         froshId: params.froshId,
-        userId: user.id,
+        userId: userInfo.sub,
       })
     );
     setNewComment({
@@ -291,7 +291,7 @@ export default function SingleFrosh() {
                           <div className="d-flex flex-start w-100">
                             <MDBCardImage
                               className="rounded-circle shadow-1-strong me-3"
-                              src={user.profile.photo}
+                              src={userInfo.picture || "/resources/images/defaultProfile.png"}
                               alt="avatar"
                               width="40"
                               height="40"

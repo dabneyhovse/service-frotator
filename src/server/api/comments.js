@@ -1,6 +1,7 @@
-const { Axios } = require("axios");
+const Axios = require("axios").default;
 const { Comment } = require("../db/models");
-const { isAdmin, isLoggedIn } = require("./middleware");
+const { claimIncludes } = require("express-openid-connect");
+const keycloakModule  = (async () => (await import('module-keycloak')).default)();
 
 const router = require("express").Router();
 module.exports = router;
@@ -15,20 +16,41 @@ module.exports = router;
  * req.params.froshId
  *  the id of the frosh
  */
-router.get("/frosh/:froshId", isLoggedIn, async (req, res, next) => {
+router.get("/frosh/:froshId", claimIncludes('backbone_roles', 'frotator-access'), async (req, res, next) => {
   try {
     const comments = Comment.findAll({
       where: { froshId: req.params.froshId },
       include: [{ model: Comment }],
     });
+    const keycloakBaseURL = process.env.KC_API_URL;
+    const keycloakClientID = process.env.CLIENT_ID;
+    // let token = await keycloakAPI.grant({
+    //   grant_type: 'client_credentials',
+    //   client_id: keycloakClientID,
+    // });
+    let token = "lol lmao even";
+    const keycloakAPI = await keycloakModule();
     for (let i = 0; i < comments.length; i++) {
-      const res = await Axios.get(`/api/users/${comments[i].userId}`);
-      comments[i].dataValues.from = res.data;
+      const res = await keycloakAPI.requestResource(`${keycloakBaseURL}/users/${comments[i].userId}`, token);
+      if (res.statusCode === 401) {
+        token = await keycloakAPI.grant({
+          grant_type: 'client_credentials',
+          client_id: keycloakClientID,
+          scope: 'openid admin-api',
+        })
+        res = await keycloakAPI.requestResource(`${keycloakBaseURL}/users/${comments[i].userId}`, token);
+      }
+      else if (res.statusCode < 200 || res.statusCode >= 400) {
+        throw new Error(`Failed to fetch comment data`);
+      }
+      const { name , username, picture } = res.data;
+      const userData = { name: name, username: username, picture: picture };
+      comments[i].dataValues.from = userData;
     }
   } catch (error) {
     next(error);
   }
-});
+});  
 
 /**
  * This will be mounted at the following route:
@@ -40,7 +62,7 @@ router.get("/frosh/:froshId", isLoggedIn, async (req, res, next) => {
  * req.params.froshId
  *  the id of the comment
  */
-router.get("/:commentId", isLoggedIn, async (req, res, next) => {
+router.get("/:commentId", router, async (req, res, next) => {
   try {
     const comment = await Comment.findByPk(req.params.commentId);
     res.json(comment);
@@ -59,7 +81,7 @@ router.get("/:commentId", isLoggedIn, async (req, res, next) => {
  * req.params.froshId
  *  the id of the comment
  */
-router.delete("/:commentId", isAdmin, async (req, res, next) => {
+router.delete("/:commentId", claimIncludes('backbone_roles', 'backbone-admin'), async (req, res, next) => {
   try {
     const comment = await Comment.findByPk(req.params.commentId);
     await comment.destroy();
@@ -81,7 +103,7 @@ router.delete("/:commentId", isAdmin, async (req, res, next) => {
  */
 
 const EDITABLE_FIELDS = [""];
-router.put("/:commentId", async (req, res, next) => {
+router.put("/:commentId", claimIncludes('backbone_roles', 'frotator-access'), async (req, res, next) => {
   try {
     const changes = req.body.changes;
     const comment = await Comment.findByPk(req.params.commentId);
@@ -109,7 +131,7 @@ router.put("/:commentId", async (req, res, next) => {
  * req.params.commentId
  *  the id of the comment
  */
-router.post("/", async (req, res, next) => {
+router.post("/", claimIncludes('backbone_roles', 'frotator-access'), async (req, res, next) => {
   try {
     const comment = await Comment.create({
       text: req.body.text,
@@ -120,11 +142,11 @@ router.post("/", async (req, res, next) => {
     });
     if (comment.anon) {
       comment.dataValues.from = {
-        profile: { photo: "/resources/images/defaultProfile.png" },
-        username: "amogus",
+        picture: "/resources/images/defaultProfile.png",
+        preferred_username: "amogus",
       };
     } else {
-      comment.dataValues.from = req.user;
+      comment.dataValues.from = await req.oidc.user;
     }
 
     res.json(comment);

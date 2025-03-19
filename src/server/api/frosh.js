@@ -1,13 +1,15 @@
 const { Op, Sequelize } = require("sequelize");
+const db = require("../db");
 const { Frosh, Comment } = require("../db/models");
-const { isLoggedIn, isAdmin, upload } = require("./middleware");
+const { upload } = require("./middleware");
 const { parse } = require("csv-parse");
 const fs = require("fs");
 const { Duplex } = require("stream"); // Native Node Module
 const Axios = require("axios");
 const Vote = require("../db/models/vote");
 const { Readable } = require("stream");
-
+const { claimIncludes } = require("express-openid-connect");
+const keycloakModule  = (async () => (await import('module-keycloak')).default)();
 const router = require("express").Router();
 
 module.exports = router;
@@ -93,9 +95,10 @@ const SORT_OPTIONS = {
     [Sequelize.col("favoritesCount"), "ASC"],
     ["id", "ASC"],
   ],
+  6: db.random()
 };
 
-router.get("/", isLoggedIn, async (req, res, next) => {
+router.get("/", claimIncludes('backbone_roles', 'frotator-access'), async (req, res, next) => {
   try {
     const search = req.query.search ? JSON.parse(req.query.search) : {};
     /**
@@ -259,7 +262,7 @@ router.get("/", isLoggedIn, async (req, res, next) => {
     const frosh = await Frosh.findAndCountAll(query);
 
     if (search.only_my_favorites) {
-      const favorite_frosh_votes = await Vote.findAll({where : {userId : req.user.id}});
+      const favorite_frosh_votes = await Vote.findAll({where : {userId : req.oidc.user.sub}});
       const favorite_frosh_ids = [...favorite_frosh_votes].map((v) => v.dataValues.frotatorFroshId);
       frosh.rows = frosh.rows.filter((f) => favorite_frosh_ids.includes(f.id));
     }
@@ -287,7 +290,7 @@ router.get("/", isLoggedIn, async (req, res, next) => {
  * returns a json list of the ranked frosh
  *
  */
-router.get("/ranking", isAdmin, async (req, res, next) => {
+router.get("/ranking", claimIncludes('backbone_roles', 'frotator-access', 'frotator-bigbad'), async (req, res, next) => {
   try {
     const frosh = await Frosh.findAll({
       where: {
@@ -316,7 +319,7 @@ router.get("/ranking", isAdmin, async (req, res, next) => {
   }
 });
 
-router.put("/ranking", isAdmin, async (req, res, next) => {
+router.put("/ranking", claimIncludes('backbone_roles', 'frotator-access', 'frotator-bigbad'), async (req, res, next) => {
   try {
     const froshId = req.body.froshId;
     const rank = req.body.rank;
@@ -419,7 +422,7 @@ router.put("/ranking", isAdmin, async (req, res, next) => {
  *    froshId: id of the frosh to be requested
  *
  */
-router.get("/:froshId", isLoggedIn, async (req, res, next) => {
+router.get("/:froshId", claimIncludes('backbone_roles', 'frotator-access'), async (req, res, next) => {
   try {
     const frosh = await Frosh.findByPk(req.params.froshId, {
       attributes: [
@@ -440,25 +443,45 @@ router.get("/:froshId", isLoggedIn, async (req, res, next) => {
       return;
     }
     frosh.dataValues.displayName = frosh.safeName();
+    const keycloakAPI = await keycloakModule;
+    const keycloakBaseURL = process.env.KC_API_URL;
+    const keycloakClientID = process.env.CLIENT_ID;
+    // let token = await keycloakAPI.grant({
+    //   grant_type: 'client_credentials',
+    //   client_id: keycloakClientID,
+    // });
+    let token = "lol lmao even";
 
     for (let i = 0; i < frosh["frotator-comments"].length; i++) {
       let from;
       if (frosh["frotator-comments"][i].anon) {
         from = {
-          profile: { photo: "/resources/images/defaultProfile.png" },
+          picture: "/resources/images/defaultProfile.png",
+          name: "amogus",
           username: "amogus",
         };
       } else {
-        const res = await Axios.get(
-          `http://localhost:8080/api/users/${frosh["frotator-comments"][i].userId}`,
-          { params: { local: process.env.LOCAL } }
-        );
-        from = res.data;
+        let res = await keycloakAPI.requestResource(`${keycloakBaseURL}/users/${frosh["frotator-comments"][i].userId}`, token);
+        if (res.statusCode === 401) {
+          token = await keycloakAPI.grant({
+            grant_type: 'client_credentials',
+            client_id: keycloakClientID,
+            scope: 'openid admin-api',
+          })
+          res = await keycloakAPI.requestResource(`${keycloakBaseURL}/users/${frosh["frotator-comments"][i].userId}`, token);
+        }
+        else if (res.statusCode < 200 || res.statusCode >= 400) {
+          throw new Error(`Failed to fetch comment data`);
+        }
+        const { firstName, lastName, username, attributes: { picture } } = JSON.parse(res.body.toString('utf8'));
+        const name = `${firstName} ${lastName}`;
+        const userData = { name: name, username: username, picture: picture || "/resources/images/defaultProfile.png" };
+        from = userData;
       }
       frosh["frotator-comments"][i].dataValues.from = from;
     }
     const vote = await Vote.findOne({
-      where: { userId: req.user.id, frotatorFroshId: req.params.froshId },
+      where: { userId: req.oidc.user.sub, frotatorFroshId: req.params.froshId },
     });
     if (vote) {
       frosh.dataValues.favorite = true;
@@ -507,7 +530,7 @@ const updateable = [
 
 router.post(
   "/",
-  isLoggedIn,
+  claimIncludes('backbone_roles', 'backbone-admin'),
   upload.single("csv-file"),
   async (req, res, next) => {
     try {
@@ -563,19 +586,19 @@ router.post(
   }
 );
 
-router.post("/favorite", async (req, res, next) => {
+router.post("/favorite", claimIncludes('backbone_roles', 'frotator-access'), async (req, res, next) => {
   try {
     if (req.body.favorite) {
       await Vote.findOrCreate({
         where: {
-          userId: req.user.id,
+          userId: req.oidc.user.sub,
           frotatorFroshId: req.body.froshId,
           approve: true,
         },
       });
     } else {
       const vote = await Vote.findOne({
-        where: { userId: req.user.id, frotatorFroshId: req.body.froshId },
+        where: { userId: req.oidc.user.sub, frotatorFroshId: req.body.froshId },
       });
       await vote.destroy();
     }
@@ -585,7 +608,7 @@ router.post("/favorite", async (req, res, next) => {
   }
 });
 
-router.put("/", isAdmin, upload.single("csv-file"), async (req, res, next) => {
+router.put("/", claimIncludes('backbone_roles', 'backbone-admin'), upload.single("csv-file"), async (req, res, next) => {
   try {
     const myReadableStream = bufferToStream(req.file.buffer);
 
@@ -716,7 +739,7 @@ router.put("/", isAdmin, upload.single("csv-file"), async (req, res, next) => {
   }
 });
 
-router.delete("/", isAdmin, async (req, res, next) => {
+router.delete("/", claimIncludes('backbone_roles', 'backbone-admin'), async (req, res, next) => {
   try {
     await Frosh.truncate({ cascade: true });
     res.sendStatus(200);

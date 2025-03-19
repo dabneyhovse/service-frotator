@@ -13,8 +13,8 @@ export default function FrotatorHome() {
       <h2>Welcome to Frotator™</h2>
       <small>"A slight improvement over Froshulator"</small>
       <p>
-        Remember that only darbs rotating with dabney should be accessing this
-        information.
+        Remember that only darbs rotating with Dabney should be accessing this
+        information. The Honor Code applies.
       </p>
       <Card
         className="home-card m-3"
@@ -97,7 +97,7 @@ export default function FrotatorHome() {
             <div className="m-2 ">
               <h5>Spam</h5>
               <p>
-                Want to spam Jen during meetings? You're in luck, frotator
+                Want to spam Alanna during meetings? You're in luck, frotator
                 has a new feature!!!
               </p>
             </div>

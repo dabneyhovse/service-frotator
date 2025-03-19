@@ -16,9 +16,9 @@ import {
 import { frotatorAddSpam } from "../store/spam";
 
 function Spam() {
-  const { spam, user } = useSelector((state) => ({
+  const { spam, userInfo } = useSelector((state) => ({
     spam: state.frotator.spam,
-    user: state.user.data,
+    userInfo: state.user.data,
   }));
 
   const dispatch = useDispatch();
@@ -34,20 +34,20 @@ function Spam() {
     dispatch(
       frotatorAddSpam({
         text: newComment,
-        from: { username: user.username },
+        from: { username: userInfo.preferred_username },
         id: Math.random(),
       })
     );
     socket.emit("spam", {
       text: newComment,
-      from: { username: user.username },
+      from: { username: userInfo.preferred_username },
       id: Math.random(),
     });
   };
 
   return (
     <div className="mainContent">
-      <h1>Spam Jen</h1>
+      <h1>Spam Alanna</h1>
       <MDBContainer className="py-5" style={{ maxWidth: "1000px" }}>
         <MDBRow className="justify-content-center">
           <MDBCol md="12" lg="10">
@@ -62,7 +62,7 @@ function Spam() {
                 <div className="d-flex flex-start w-100">
                   <MDBCardImage
                     className="rounded-circle shadow-1-strong me-3"
-                    src={user.profile.photo}
+                    src={userInfo.picture}
                     alt="avatar"
                     width="40"
                     height="40"

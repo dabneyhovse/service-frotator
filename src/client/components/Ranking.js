@@ -19,13 +19,13 @@ import { RankingFroshCard } from ".";
 import { fetchRanking } from "../store/ranking";
 
 export default function Ranking(props) {
-  const { frosh, page, count, search, user, rankingList } = useSelector(
+  const { frosh, page, count, search, userClaims, rankingList } = useSelector(
     (state) => ({
       frosh: state.frotator.frosh.list,
       count: state.frotator.frosh.count,
       page: state.frotator.frosh.page,
       search: state.frotator.frosh.search,
-      user: state.user.data,
+      userClaims: state.user.data.backbone_roles,
       rankingList: state.frotator.ranking.list,
     })
   );
@@ -122,7 +122,7 @@ export default function Ranking(props) {
               <Form.Select onChange={onChange} name="sort" value={search.sort}>
                 <option value="0">Default</option>
                 <option value="1">Alphabetical</option>
-                {user.authLevel >= 4 ? (
+                {userClaims.includes("frotator-adv-sort") ? (
                   <>
                     <option value="2">Most Comments</option>
                     <option value="3">Least Comments</option>
@@ -258,7 +258,7 @@ export default function Ranking(props) {
                     >
                       <option value="0">Default</option>
                       <option value="1">Alphabetical</option>
-                      {user.authLevel >= 4 ? (
+                      {userClaims.includes("frotator-adv-sort") ? (
                         <>
                           <option value="2">Most Comments</option>
                           <option value="3">Least Comments</option>
