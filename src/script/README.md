@@ -48,3 +48,7 @@ This can be done by looking at your request headers when you access the page nor
 ![Network inspect example](network.png)
 
 I've blacked out my cookies, but `session=[key]` is the important section. Just grab that and give it to the script when prompted (just the key after the equals sign).
+
+## Finally
+
+You need to create the spreadsheet. The template is ![here](template.csv).
